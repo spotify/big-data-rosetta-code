@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -41,6 +42,22 @@ object MaxItemPerUser {
     input
       .groupBy(_.user)
       .aggregate(maxBy(_.score))
+      .values
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+    input
+      .keyBy(_.user)
+      .topByKey(1)(Ordering.by(_.score))
+      .flatMap(_._2)
+  }
+
+  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+    import com.twitter.algebird.Aggregator.maxBy
+    input
+      .keyBy(_.user)
+      // explicit type due to type inference limitation
+      .aggregateByKey(maxBy { x: UserItemData => x.score})
       .values
   }
 

@@ -17,6 +17,7 @@
 
 package com.spotify.bdrc
 
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -51,6 +52,24 @@ object PageRank {
         .sum
         .mapValues((1 - dampingFactor) + dampingFactor * _)
         .toTypedPipe
+    }
+
+    ranks
+  }
+
+  def scio(input: SCollection[(String, String)]): SCollection[(String, Double)] = {
+    val links = input.groupByKey()
+    var ranks = links.mapValues(_ => 1.0)
+
+    for (i <- 1 to 10) {
+      val contribs = links
+        .join(ranks)
+        .values
+        .flatMap { case (urls, rank) =>
+          val size = urls.size
+          urls.map((_, rank / size))
+        }
+      ranks = contribs.sumByKey.mapValues((1 - dampingFactor) + dampingFactor * _)
     }
 
     ranks

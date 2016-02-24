@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -43,6 +44,12 @@ object SumPerItem {
       // an Algebird Aggregator that converts UserItemData to Double (via _.score) before reduce
       .aggregate(prepareMonoid(_.score))
       .toTypedPipe
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+    input
+      .map(x => (x.item, x.score))
+      .sumByKey
   }
 
   def spark(input: RDD[UserItemData]): RDD[(String, Double)] = {

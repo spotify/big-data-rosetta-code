@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -49,6 +50,24 @@ object TopItems {
       .toTypedPipe
       .aggregate(aggregator)
       .flatten
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+    input
+      .map(x => (x.item, x.score))
+      .sumByKey
+      .top(topK)(Ordering.by(_._2))
+      .flatMap(identity)
+  }
+
+  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+    import com.twitter.algebird.Aggregator.sortedReverseTake
+    val aggregator = sortedReverseTake[(String, Double)](topK)(Ordering.by(_._2))
+    input
+      .map(x => (x.item, x.score))
+      .sumByKey
+      .aggregate(aggregator)
+      .flatMap(identity)
   }
 
   def spark(input: RDD[UserItemData]): Seq[(String, Double)] = {

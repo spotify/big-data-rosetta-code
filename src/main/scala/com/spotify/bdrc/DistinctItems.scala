@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -32,6 +33,12 @@ object DistinctItems {
     input
       .map(_.item)
       .distinct
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[String] = {
+    input
+      .map(_.item)
+      .distinct()
   }
 
   def spark(input: RDD[UserItemData]): RDD[String] = {

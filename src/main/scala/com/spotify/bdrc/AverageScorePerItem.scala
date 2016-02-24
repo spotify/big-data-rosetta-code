@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.algebird.Semigroup
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -45,6 +46,14 @@ object AverageScorePerItem {
       .mapValues(_.score)
       .aggregate(AveragedValue.aggregator)
       .toTypedPipe
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+    input
+      .keyBy(_.user)
+      .mapValues(x => (x.score, 1L))
+      .sumByKey
+      .mapValues(p => p._1 / p._2)
   }
 
   // summon an Algebird Semigroup with implicit

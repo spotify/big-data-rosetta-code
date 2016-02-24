@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -40,6 +41,17 @@ object Count {
     input
       .aggregate(size)
       .toTypedPipe
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[Long] = {
+    input
+      .count()
+  }
+
+  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[Long] = {
+    import com.twitter.algebird.Aggregator.size
+    input
+      .aggregate(size)
   }
 
   def spark(input: RDD[UserItemData]): Long = {

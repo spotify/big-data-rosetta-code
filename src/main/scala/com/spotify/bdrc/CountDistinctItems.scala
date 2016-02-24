@@ -19,6 +19,7 @@ package com.spotify.bdrc
 
 import com.google.common.base.Charsets
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -47,6 +48,21 @@ object CountDistinctItems {
       .map(_.item.getBytes(Charsets.UTF_8))  // HyperLogLog expects bytes input
       .aggregate(aggregator)
       .toTypedPipe
+  }
+
+  /** Exact approach */
+  def scio(input: SCollection[UserItemData]): SCollection[Long] = {
+    input
+      .map(_.item)
+      .distinct()
+      .count()
+  }
+
+  /** Approximate approach */
+  def scioApprox(input: SCollection[UserItemData]): SCollection[Long] = {
+    input
+      .map(_.item)
+      .countApproxDistinct()
   }
 
   /** Exact approach */

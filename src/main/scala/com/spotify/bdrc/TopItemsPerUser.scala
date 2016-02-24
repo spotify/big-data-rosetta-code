@@ -18,6 +18,7 @@
 package com.spotify.bdrc
 
 import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -36,6 +37,13 @@ object TopItemsPerUser {
       .sortedReverseTake(topK)(Ordering.by(_.score))  // priority queue
       .values
       .flatten
+  }
+
+  def scio(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+    input
+      .keyBy(_.user)
+      .topByKey(topK)(Ordering.by(_.score))
+      .flatMap(_._2)
   }
 
   def spark(input: RDD[UserItemData]): RDD[UserItemData] = {

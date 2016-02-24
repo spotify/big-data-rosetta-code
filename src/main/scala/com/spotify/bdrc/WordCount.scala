@@ -17,6 +17,7 @@
 
 package com.spotify.bdrc
 
+import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -33,6 +34,13 @@ object WordCount {
       .groupBy(identity)  // word -> [word, word, ...]
       .size
       .toTypedPipe
+  }
+
+  def scio(input: SCollection[String]): SCollection[(String, Long)] = {
+    input
+      .flatMap(_.split("[^a-zA-Z']+").filter(_.nonEmpty))
+      .map((_, 1L))
+      .sumByKey
   }
 
   /** Result is distributed. */
