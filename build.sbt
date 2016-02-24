@@ -4,7 +4,7 @@ name := "big-data-rosetta-code"
 
 version := "0.1.0-SNAPSHOT"
 
-scalaVersion := "2.10.6"
+scalaVersion := "2.11.7"
 
 scalacOptions ++= Seq("-target:jvm-1.7", "-deprecation", "-feature", "-unchecked")
 
