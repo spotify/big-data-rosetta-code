@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -29,37 +29,37 @@ import org.apache.spark.rdd.RDD
  */
 object Count {
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[Long] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
       .map(_ => 1L)
       .sum
       .toTypedPipe
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[Long] = {
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Long] = {
     import com.twitter.algebird.Aggregator.size
     input
       .aggregate(size)
       .toTypedPipe
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[Long] = {
+  def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
       .count()
   }
 
-  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[Long] = {
+  def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
     import com.twitter.algebird.Aggregator.size
     input
       .aggregate(size)
   }
 
-  def spark(input: RDD[UserItemData]): Long = {
+  def spark(input: RDD[Rating]): Long = {
     input
       .count()
   }
 
-  def sparkWithAlgebird(input: RDD[UserItemData]): Long = {
+  def sparkWithAlgebird(input: RDD[Rating]): Long = {
     import com.twitter.algebird.Aggregator.size
     import com.twitter.algebird.spark._
     input

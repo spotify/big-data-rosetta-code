@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -31,7 +31,7 @@ object TopItems {
 
   val topK = 100
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .groupAll  // force all records to a single reducer
@@ -40,7 +40,7 @@ object TopItems {
       .flatten
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.Aggregator.sortedReverseTake
     val aggregator = sortedReverseTake[(String, Double)](topK)(Ordering.by(_._2))
     input
@@ -52,7 +52,7 @@ object TopItems {
       .flatten
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+  def scio(input: SCollection[Rating]): SCollection[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .sumByKey
@@ -60,7 +60,7 @@ object TopItems {
       .flatMap(identity)
   }
 
-  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+  def scioWithAlgebird(input: SCollection[Rating]): SCollection[(String, Double)] = {
     import com.twitter.algebird.Aggregator.sortedReverseTake
     val aggregator = sortedReverseTake[(String, Double)](topK)(Ordering.by(_._2))
     input
@@ -70,14 +70,14 @@ object TopItems {
       .flatMap(identity)
   }
 
-  def spark(input: RDD[UserItemData]): Seq[(String, Double)] = {
+  def spark(input: RDD[Rating]): Seq[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .reduceByKey(_ + _)
       .top(topK)(Ordering.by(_._2))
   }
 
-  def sparkWithAlgebird(input: RDD[UserItemData]): Seq[(String, Double)] = {
+  def sparkWithAlgebird(input: RDD[Rating]): Seq[(String, Double)] = {
     import com.twitter.algebird.Aggregator.sortedReverseTake
     import com.twitter.algebird.spark._
     val aggregator = sortedReverseTake[(String, Double)](topK)(Ordering.by(_._2))

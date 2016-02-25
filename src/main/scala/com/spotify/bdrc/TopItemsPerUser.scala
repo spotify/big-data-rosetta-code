@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -31,7 +31,7 @@ object TopItemsPerUser {
 
   val topK = 100
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[UserItemData] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[Rating] = {
     input
       .groupBy(_.user)
       .sortedReverseTake(topK)(Ordering.by(_.score))  // priority queue
@@ -39,14 +39,14 @@ object TopItemsPerUser {
       .flatten
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+  def scio(input: SCollection[Rating]): SCollection[Rating] = {
     input
       .keyBy(_.user)
       .topByKey(topK)(Ordering.by(_.score))
       .flatMap(_._2)
   }
 
-  def spark(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def spark(input: RDD[Rating]): RDD[Rating] = {
     input
       .groupBy(_.user)
       .values
@@ -54,10 +54,10 @@ object TopItemsPerUser {
       .flatMap(_.toList.sortBy(-_.score).take(topK))
   }
 
-  def sparkWithAlgebird(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def sparkWithAlgebird(input: RDD[Rating]): RDD[Rating] = {
     import com.twitter.algebird.Aggregator.sortedReverseTake
     import com.twitter.algebird.spark._
-    val aggregator = sortedReverseTake[UserItemData](topK)(Ordering.by(_.score))  // priority queue
+    val aggregator = sortedReverseTake[Rating](topK)(Ordering.by(_.score))  // priority queue
     input
       .keyBy(_.user)
       .algebird
@@ -65,7 +65,7 @@ object TopItemsPerUser {
       .flatMap(_._2)
   }
 
-  def sparkWithMllib(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def sparkWithMllib(input: RDD[Rating]): RDD[Rating] = {
     import org.apache.spark.mllib.rdd.MLPairRDDFunctions._
     input
       .keyBy(_.user)

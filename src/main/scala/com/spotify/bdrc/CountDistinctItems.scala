@@ -18,7 +18,7 @@
 package com.spotify.bdrc
 
 import com.google.common.base.Charsets
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -31,7 +31,7 @@ import org.apache.spark.rdd.RDD
 object CountDistinctItems {
 
   /** Exact approach */
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[Long] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
       .map(_.item)
       .distinct
@@ -41,7 +41,7 @@ object CountDistinctItems {
   }
 
   /** Approximate approach */
-  def scaldingApproxWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[Double] = {
+  def scaldingApproxWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Double] = {
     import com.twitter.algebird.HyperLogLogAggregator
     val aggregator = HyperLogLogAggregator.sizeAggregator(bits = 12)
     input
@@ -51,7 +51,7 @@ object CountDistinctItems {
   }
 
   /** Exact approach */
-  def scio(input: SCollection[UserItemData]): SCollection[Long] = {
+  def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
       .map(_.item)
       .distinct()
@@ -59,14 +59,14 @@ object CountDistinctItems {
   }
 
   /** Approximate approach */
-  def scioApprox(input: SCollection[UserItemData]): SCollection[Long] = {
+  def scioApprox(input: SCollection[Rating]): SCollection[Long] = {
     input
       .map(_.item)
       .countApproxDistinct()
   }
 
   /** Exact approach */
-  def spark(input: RDD[UserItemData]): Long = {
+  def spark(input: RDD[Rating]): Long = {
     input
       .map(_.item)
       .distinct()
@@ -74,7 +74,7 @@ object CountDistinctItems {
   }
 
   /** Approximate approach */
-  def sparkApprox(input: RDD[UserItemData]): Long = {
+  def sparkApprox(input: RDD[Rating]): Long = {
     input
       .map(_.item)
       .countApproxDistinct()

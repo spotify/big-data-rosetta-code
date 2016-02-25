@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.algebird.Semigroup
 import com.twitter.scalding.TypedPipe
@@ -30,7 +30,7 @@ import org.apache.spark.rdd.RDD
  */
 object AverageScorePerItem {
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     input
       .groupBy(_.user)
       .mapValues(x => (x.score, 1L))
@@ -39,7 +39,7 @@ object AverageScorePerItem {
       .toTypedPipe
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
     input
       .groupBy(_.user)
@@ -48,7 +48,7 @@ object AverageScorePerItem {
       .toTypedPipe
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+  def scio(input: SCollection[Rating]): SCollection[(String, Double)] = {
     input
       .keyBy(_.user)
       .mapValues(x => (x.score, 1L))
@@ -57,7 +57,7 @@ object AverageScorePerItem {
   }
 
   // summon an Algebird Semigroup with implicit
-  def spark(input: RDD[UserItemData])(implicit sg: Semigroup[(Double, Long)]): RDD[(String, Double)] = {
+  def spark(input: RDD[Rating])(implicit sg: Semigroup[(Double, Long)]): RDD[(String, Double)] = {
     input
       .keyBy(_.user)
       .mapValues(x => (x.score, 1L))
@@ -65,7 +65,7 @@ object AverageScorePerItem {
       .mapValues(p => p._1 / p._2)
   }
 
-  def sparkWithAlgebird(input: RDD[UserItemData]): RDD[(String, Double)] = {
+  def sparkWithAlgebird(input: RDD[Rating]): RDD[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
     import com.twitter.algebird.spark._
     input

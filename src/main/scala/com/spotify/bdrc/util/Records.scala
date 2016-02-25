@@ -19,6 +19,6 @@ package com.spotify.bdrc.util
 
 object Records {
 
-  case class UserItemData(user: String, item: String, score: Double)
+  case class Rating(user: String, item: String, score: Double)
 
 }

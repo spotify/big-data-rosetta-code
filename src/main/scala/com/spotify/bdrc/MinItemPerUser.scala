@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -29,7 +29,7 @@ import org.apache.spark.rdd.RDD
  */
 object MinItemPerUser {
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[UserItemData] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[Rating] = {
     input
       .groupBy(_.user)
       // pick the side with lower score for each pair
@@ -37,7 +37,7 @@ object MinItemPerUser {
       .values
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[UserItemData] = {
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Rating] = {
     import com.twitter.algebird.Aggregator.minBy
     input
       .groupBy(_.user)
@@ -45,41 +45,41 @@ object MinItemPerUser {
       .values
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+  def scio(input: SCollection[Rating]): SCollection[Rating] = {
     input
       .keyBy(_.user)
       .topByKey(1)(Ordering.by(-_.score))
       .flatMap(_._2)
   }
 
-  def scioWithAlgebird(input: SCollection[UserItemData]): SCollection[UserItemData] = {
+  def scioWithAlgebird(input: SCollection[Rating]): SCollection[Rating] = {
     import com.twitter.algebird.Aggregator.minBy
     input
       .keyBy(_.user)
       // explicit type due to type inference limitation
-      .aggregateByKey(minBy { x: UserItemData => x.score})
+      .aggregateByKey(minBy { x: Rating => x.score})
       .values
   }
 
-  def spark(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def spark(input: RDD[Rating]): RDD[Rating] = {
     input
       .keyBy(_.user)
-      .reduceByKey((x: UserItemData, y: UserItemData) => if (x.score < y.score) x else y)
+      .reduceByKey((x: Rating, y: Rating) => if (x.score < y.score) x else y)
       .values
   }
 
-  def sparkWithAlgebird(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def sparkWithAlgebird(input: RDD[Rating]): RDD[Rating] = {
     import com.twitter.algebird.Aggregator.minBy
     import com.twitter.algebird.spark._
     input
       .keyBy(_.user)
       .algebird
       // explicit type due to type inference limitation
-      .aggregateByKey(minBy { x: UserItemData => x.score })
+      .aggregateByKey(minBy { x: Rating => x.score })
       .values
   }
 
-  def sparkWithMllib(input: RDD[UserItemData]): RDD[UserItemData] = {
+  def sparkWithMllib(input: RDD[Rating]): RDD[Rating] = {
     import org.apache.spark.mllib.rdd.MLPairRDDFunctions._
     input
       .keyBy(_.user)

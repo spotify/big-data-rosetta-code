@@ -17,7 +17,7 @@
 
 package com.spotify.bdrc
 
-import com.spotify.bdrc.util.Records.UserItemData
+import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -29,7 +29,7 @@ import org.apache.spark.rdd.RDD
  */
 object SumPerItem {
 
-  def scalding(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     input
       .groupBy(_.item)
       .mapValues(_.score)
@@ -37,7 +37,7 @@ object SumPerItem {
       .toTypedPipe
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[UserItemData]): TypedPipe[(String, Double)] = {
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.Aggregator.prepareMonoid
     input
       .groupBy(_.item)
@@ -46,20 +46,20 @@ object SumPerItem {
       .toTypedPipe
   }
 
-  def scio(input: SCollection[UserItemData]): SCollection[(String, Double)] = {
+  def scio(input: SCollection[Rating]): SCollection[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .sumByKey
   }
 
-  def spark(input: RDD[UserItemData]): RDD[(String, Double)] = {
+  def spark(input: RDD[Rating]): RDD[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .reduceByKey(_ + _)
   }
 
   /** First algebird-spark approach using sumByKey on doubles. */
-  def sparkWithAlgebird1(input: RDD[UserItemData]): RDD[(String, Double)] = {
+  def sparkWithAlgebird1(input: RDD[Rating]): RDD[(String, Double)] = {
     import com.twitter.algebird.spark._
     input
       .map(x => (x.item, x.score))
@@ -68,7 +68,7 @@ object SumPerItem {
   }
 
   /** Second algebird-spark approach using aggregateByKey with prepare. */
-  def sparkWithAlgebird2(input: RDD[UserItemData]): RDD[(String, Double)] = {
+  def sparkWithAlgebird2(input: RDD[Rating]): RDD[(String, Double)] = {
     import com.twitter.algebird.spark._
     import com.twitter.algebird.Aggregator.prepareMonoid
     input
@@ -76,7 +76,7 @@ object SumPerItem {
       .algebird
       // an Algebird Aggregator that converts UserItemData to Double (via _.score) before reduce
       // explicit type due to type inference limitation
-      .aggregateByKey(prepareMonoid { x: UserItemData => x.score })
+      .aggregateByKey(prepareMonoid { x: Rating => x.score })
   }
 
 }
