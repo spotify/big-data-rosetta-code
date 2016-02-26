@@ -69,7 +69,9 @@ object PageRank {
           val size = urls.size
           urls.map((_, rank / size))
         }
-      ranks = contribs.sumByKey.mapValues((1 - dampingFactor) + dampingFactor * _)
+      ranks = contribs
+        .sumByKey
+        .mapValues((1 - dampingFactor) + dampingFactor * _)
     }
 
     ranks
