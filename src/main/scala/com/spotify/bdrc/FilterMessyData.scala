@@ -17,12 +17,12 @@
 
 package com.spotify.bdrc
 
-import com.twitter.scalding.TypedPipe
-
 import scala.util.Try
 
 /**
- * Filter out messy data that may have nulls or empty collections
+ * Filter out messy data that may cause computation to fail.
+ *
+ * Input is a collection of case classes with messy values.
  */
 object FilterMessyData {
 
@@ -31,26 +31,26 @@ object FilterMessyData {
   /** Dummy method that may fail for invalid records. */
   def compute(x: MessyData): String = "dummy_result"
 
-  /** Naive approach that requires checking every field accessed. */
-  def scaldingNaive(input: TypedPipe[MessyData]): TypedPipe[String] = {
+  /** Naive approach that checks every field accessed. */
+  def native(input: Seq[MessyData]): Seq[String] = {
     input
       .filter { x =>
         x.user != null && x.gender != null &&
           x.scores != null && x.scores.nonEmpty &&
           x.favorites != null && x.favorites.nonEmpty
       }
-      .map(compute)
+      .map(compute)  // may still fail for unexpected cases
   }
 
   /**
    * Smart approach that throws any failed records away.
    *
    * Try.toOption returns Some if the computation succeeds or None if it fails.
-   * Option.toSeq is required since .flatMap expects T => TraversableOnce.
+   * Option[U] is implicitly converted to TraversableOnce[U] that flatMap expects.
    */
-  def scalding(input: TypedPipe[MessyData]): TypedPipe[String] = {
+  def withFlatMap(input: Seq[MessyData]): Seq[String] = {
     input
-      .flatMap(x => Try(compute(x)).toOption.toSeq)
+      .flatMap(x => Try(compute(x)).toOption)
   }
 
 }
