@@ -15,7 +15,7 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
@@ -69,8 +69,8 @@ object SumPerItem {
 
   /** Second algebird-spark approach using aggregateByKey with prepare. */
   def sparkWithAlgebird2(input: RDD[Rating]): RDD[(String, Double)] = {
-    import com.twitter.algebird.spark._
     import com.twitter.algebird.Aggregator.prepareMonoid
+    import com.twitter.algebird.spark._
     input
       .keyBy(_.item)
       .algebird

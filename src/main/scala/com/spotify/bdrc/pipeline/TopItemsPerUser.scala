@@ -15,7 +15,7 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
@@ -23,67 +23,53 @@ import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
 /**
- * Compute one item with max score per user.
+ * Compute top K items for each user.
  *
  * Input is a collection of (user, item, score).
  */
-object MaxItemPerUser {
+object TopItemsPerUser {
+
+  val topK = 100
 
   def scalding(input: TypedPipe[Rating]): TypedPipe[Rating] = {
     input
       .groupBy(_.user)
-      // pick the side with higher score for each pair
-      .reduce((x, y) => if (x.score > y.score) x else y)
+      .sortedReverseTake(topK)(Ordering.by(_.score))  // priority queue
       .values
-  }
-
-  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Rating] = {
-    import com.twitter.algebird.Aggregator.maxBy
-    input
-      .groupBy(_.user)
-      .aggregate(maxBy(_.score))
-      .values
+      .flatten
   }
 
   def scio(input: SCollection[Rating]): SCollection[Rating] = {
     input
       .keyBy(_.user)
-      .topByKey(1)(Ordering.by(_.score))
+      .topByKey(topK)(Ordering.by(_.score))
       .flatMap(_._2)
-  }
-
-  def scioWithAlgebird(input: SCollection[Rating]): SCollection[Rating] = {
-    import com.twitter.algebird.Aggregator.maxBy
-    input
-      .keyBy(_.user)
-      // explicit type due to type inference limitation
-      .aggregateByKey(maxBy { x: Rating => x.score})
-      .values
   }
 
   def spark(input: RDD[Rating]): RDD[Rating] = {
     input
-      .keyBy(_.user)
-      .reduceByKey((x: Rating, y: Rating) => if (x.score > y.score) x else y)
+      .groupBy(_.user)
       .values
+      // sort items for each user on a single node, inefficient
+      .flatMap(_.toList.sortBy(-_.score).take(topK))
   }
 
   def sparkWithAlgebird(input: RDD[Rating]): RDD[Rating] = {
-    import com.twitter.algebird.Aggregator.maxBy
+    import com.twitter.algebird.Aggregator.sortedReverseTake
     import com.twitter.algebird.spark._
+    val aggregator = sortedReverseTake[Rating](topK)(Ordering.by(_.score))  // priority queue
     input
       .keyBy(_.user)
       .algebird
-      // explicit type due to type inference limitation
-      .aggregateByKey(maxBy { x: Rating => x.score })
-      .values
+      .aggregateByKey(aggregator)
+      .flatMap(_._2)
   }
 
   def sparkWithMllib(input: RDD[Rating]): RDD[Rating] = {
     import org.apache.spark.mllib.rdd.MLPairRDDFunctions._
     input
       .keyBy(_.user)
-      .topByKey(1)(Ordering.by(_.score))  // from spark-mllib
+      .topByKey(topK)(Ordering.by(_.score))  // from spark-mllib, priority queue
       .flatMap(_._2)
   }
 

@@ -15,7 +15,7 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection

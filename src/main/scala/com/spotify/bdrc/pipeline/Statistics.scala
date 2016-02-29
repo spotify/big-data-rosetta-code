@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Spotify AB.
+ * Copyright 2016 Spotify AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
@@ -34,9 +34,8 @@ object Statistics {
 
   // Algebird Aggregator
   def aggregator = {
-    import com.twitter.algebird.Aggregator._
+    import com.twitter.algebird.Aggregator.{prepareMonoid, _}
     import com.twitter.algebird.Moments
-    import com.twitter.algebird.Aggregator.prepareMonoid
 
     // 4 aggregators with different logic
     val maxOp = maxBy[Rating, Double](_.score)

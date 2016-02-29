@@ -15,56 +15,69 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
+import com.google.common.base.Charsets
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
 /**
- * Compute number of items.
+ * Compute number of distinct items.
  *
  * Input is a collection of (user, item, score).
  */
-object Count {
+object CountDistinctItems {
 
+  /** Exact approach */
   def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
+      .map(_.item)
+      .distinct
       .map(_ => 1L)
-      .sum
+      .sum  // implicit Semigroup[Long] from Algebird
       .toTypedPipe
   }
 
-  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Long] = {
-    import com.twitter.algebird.Aggregator.size
+  /** Approximate approach */
+  def scaldingApproxWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Double] = {
+    import com.twitter.algebird.HyperLogLogAggregator
+    val aggregator = HyperLogLogAggregator.sizeAggregator(bits = 12)
     input
-      .aggregate(size)
+      .map(_.item.getBytes(Charsets.UTF_8))  // HyperLogLog expects bytes input
+      .aggregate(aggregator)
       .toTypedPipe
   }
 
+  /** Exact approach */
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
+      .map(_.item)
+      .distinct()
       .count()
   }
 
-  def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
-    import com.twitter.algebird.Aggregator.size
+  /** Approximate approach */
+  def scioApprox(input: SCollection[Rating]): SCollection[Long] = {
     input
-      .aggregate(size)
+      .map(_.item)
+      .countApproxDistinct()
   }
 
+  /** Exact approach */
   def spark(input: RDD[Rating]): Long = {
     input
+      .map(_.item)
+      .distinct()
       .count()
   }
 
-  def sparkWithAlgebird(input: RDD[Rating]): Long = {
-    import com.twitter.algebird.Aggregator.size
-    import com.twitter.algebird.spark._
+  /** Approximate approach */
+  def sparkApprox(input: RDD[Rating]): Long = {
     input
-      .algebird
-      .aggregate(size)
+      .map(_.item)
+      .countApproxDistinct()
   }
 
 }

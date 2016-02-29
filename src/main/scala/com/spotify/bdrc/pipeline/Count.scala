@@ -15,69 +15,56 @@
  * under the License.
  */
 
-package com.spotify.bdrc
+package com.spotify.bdrc.pipeline
 
-import com.google.common.base.Charsets
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
 /**
- * Compute number of distinct items.
+ * Compute number of items.
  *
  * Input is a collection of (user, item, score).
  */
-object CountDistinctItems {
+object Count {
 
-  /** Exact approach */
   def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
-      .map(_.item)
-      .distinct
       .map(_ => 1L)
-      .sum  // implicit Semigroup[Long] from Algebird
+      .sum
       .toTypedPipe
   }
 
-  /** Approximate approach */
-  def scaldingApproxWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Double] = {
-    import com.twitter.algebird.HyperLogLogAggregator
-    val aggregator = HyperLogLogAggregator.sizeAggregator(bits = 12)
+  def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Long] = {
+    import com.twitter.algebird.Aggregator.size
     input
-      .map(_.item.getBytes(Charsets.UTF_8))  // HyperLogLog expects bytes input
-      .aggregate(aggregator)
+      .aggregate(size)
       .toTypedPipe
   }
 
-  /** Exact approach */
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
-      .map(_.item)
-      .distinct()
       .count()
   }
 
-  /** Approximate approach */
-  def scioApprox(input: SCollection[Rating]): SCollection[Long] = {
+  def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
+    import com.twitter.algebird.Aggregator.size
     input
-      .map(_.item)
-      .countApproxDistinct()
+      .aggregate(size)
   }
 
-  /** Exact approach */
   def spark(input: RDD[Rating]): Long = {
     input
-      .map(_.item)
-      .distinct()
       .count()
   }
 
-  /** Approximate approach */
-  def sparkApprox(input: RDD[Rating]): Long = {
+  def sparkWithAlgebird(input: RDD[Rating]): Long = {
+    import com.twitter.algebird.Aggregator.size
+    import com.twitter.algebird.spark._
     input
-      .map(_.item)
-      .countApproxDistinct()
+      .algebird
+      .aggregate(size)
   }
 
 }
