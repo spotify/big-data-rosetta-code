@@ -32,7 +32,7 @@ object FilterMessyData {
   def compute(x: MessyData): String = "dummy_result"
 
   /** Naive approach that checks every field accessed. */
-  def native(input: Seq[MessyData]): Seq[String] = {
+  def naive(input: Seq[MessyData]): Seq[String] = {
     input
       .filter { x =>
         x.user != null && x.gender != null &&
