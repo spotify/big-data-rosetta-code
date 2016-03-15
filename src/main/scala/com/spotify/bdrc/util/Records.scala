@@ -19,7 +19,8 @@ package com.spotify.bdrc.util
 
 object Records {
 
-  case class LogEvent(user: String, page: String, timestamp: Long)
+  case class LogEvent(user: String, track: String, timestamp: Long)
   case class Rating(user: String, item: String, score: Double)
+  case class UserMeta(user: String, age: Int)
 
 }
