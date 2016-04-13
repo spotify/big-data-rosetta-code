@@ -19,7 +19,6 @@ package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
 import com.spotify.scio.values.SCollection
-import com.twitter.algebird.MultiAggregator
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
@@ -30,23 +29,28 @@ import org.apache.spark.rdd.RDD
  */
 object Statistics {
 
-  case class Stats(max: Double, min: Double, sum: Double, count: Long, mean: Double, stdev: Double)
+  case class Stats(max: Double, min: Double, sum: Double, count: Long, mean: Double, stddev: Double)
 
   // Algebird Aggregator
   def aggregator = {
-    import com.twitter.algebird.Aggregator.{prepareMonoid, _}
-    import com.twitter.algebird.Moments
+    import com.twitter.algebird._
 
-    // 4 aggregators with different logic
-    val maxOp = maxBy[Rating, Double](_.score)
-    val minOp = minBy[Rating, Double](_.score)
-    val sum = prepareMonoid[Rating, Double](_.score)
-    val moments = Moments.aggregator.composePrepare[Rating](_.score)
+    /*
+    4 aggregators with different logic
+
+    The first 3 aggregators are of type Aggregator[Rating, _, Double] which means it takes Rating as
+    input and outputs Double. The last aggregator is of type Aggregator[Rating, _, Moments].
+    The input Rating is prepared with a (Rating => Double) function _.score.
+     */
+    val maxOp = Aggregator.max[Double].composePrepare[Rating](_.score)
+    val minOp = Aggregator.min[Double].composePrepare[Rating](_.score)
+    val sumOp = Aggregator.prepareMonoid[Rating, Double](_.score)
+    val momentsOp = Moments.aggregator.composePrepare[Rating](_.score)
 
     // Apply 4 aggregators on the same input, present result Tuple4 as Stats
-    MultiAggregator(maxOp, minOp, sum, moments)
-      .andThenPresent { case (mmax, mmin, ssum, moment) =>
-        Stats(mmax.score, mmin.score, ssum, moment.count, moment.mean, moment.stddev)
+    MultiAggregator(maxOp, minOp, sumOp, momentsOp)
+      .andThenPresent { case (max, min, sum, moments) =>
+        Stats(max, min, sum, moments.count, moments.mean, moments.stddev)
       }
   }
 
