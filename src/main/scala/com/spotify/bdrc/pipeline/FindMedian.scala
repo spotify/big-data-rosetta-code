@@ -24,7 +24,7 @@ import org.apache.spark.rdd.RDD
 /**
  * Compute the median of a collection of numbers.
  */
-class FindMedian {
+object FindMedian {
 
   // Computing the exact median is very expensive as it requires sorting and counting elements.
   // QTree is a compact data structure for approximate quantile and range queries.
