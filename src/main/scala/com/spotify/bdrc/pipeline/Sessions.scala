@@ -22,6 +22,7 @@ import com.spotify.scio.extra.Iterators._
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
+import org.joda.time.Instant
 
 import scala.collection.mutable
 
@@ -68,6 +69,7 @@ object Sessions {
 
   def scio(input: SCollection[LogEvent]): SCollection[Session] = {
     input
+      .timestampBy(e => new Instant(e.timestamp))  // values in groupBy are sorted by timestamp
       .groupBy(_.user)  // no secondary sort in Scio
       .flatMapValues { _
         .iterator
@@ -83,6 +85,7 @@ object Sessions {
     input
       .groupBy(_.user)  // no secondary sort in Spark
       .flatMapValues { _
+        .toList.sortBy(_.timestamp)  // order of values is not guaranteed
         .iterator
         .timeSeries(_.timestamp)  // generic version of SessionIterator from scio-extra
         .session(gapDuration)
