@@ -47,7 +47,7 @@ object CountUsers {
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
       .filter(_.user == "Smith")
-      .count()
+      .count
   }
 
   def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {

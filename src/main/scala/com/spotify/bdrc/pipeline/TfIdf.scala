@@ -86,7 +86,7 @@ object TfIdf {
       .map{ case ((d, t), tf) => (d, (t, tf)) }
 
     val termToDfN = docToTerms
-      .distinct()
+      .distinct
       .values
       // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))

@@ -58,7 +58,7 @@ object PageRank {
   }
 
   def scio(input: SCollection[(String, String)]): SCollection[(String, Double)] = {
-    val links = input.groupByKey()
+    val links = input.groupByKey
     var ranks = links.mapValues(_ => 1.0)
 
     for (i <- 1 to 10) {

@@ -61,7 +61,7 @@ object Statistics {
   def scio(input: SCollection[Rating]): SCollection[Stats] = {
     input
       .map(_.score)
-      .stats()
+      .stats
       .map(s => Stats(s.max, s.min, s.sum, s.count, s.mean, s.stdev))
   }
 

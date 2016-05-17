@@ -38,7 +38,7 @@ object DistinctItems {
   def scio(input: SCollection[Rating]): SCollection[String] = {
     input
       .map(_.item)
-      .distinct()
+      .distinct
   }
 
   def spark(input: RDD[Rating]): RDD[String] = {

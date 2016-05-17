@@ -45,7 +45,7 @@ object Count {
 
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
-      .count()
+      .count
   }
 
   def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
@@ -56,7 +56,7 @@ object Count {
 
   def spark(input: RDD[Rating]): Long = {
     input
-      .count()
+      .count
   }
 
   def sparkWithAlgebird(input: RDD[Rating]): Long = {

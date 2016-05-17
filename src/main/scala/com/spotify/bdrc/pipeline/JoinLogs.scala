@@ -62,7 +62,7 @@ object JoinLogs {
     val plays = playEvents.map(e => (e.user, ("play", e)))
     val saves = saveEvents.map(e => (e.user, ("save", e)))
 
-    plays.coGroup(saves)
+    plays.cogroup(saves)
       .flatMapValues { case (p, s) =>  // iterables of play and save events for the user
         (p ++ s).toList
           .sortBy(_._2.timestamp)

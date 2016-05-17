@@ -54,8 +54,8 @@ object CountDistinctItems {
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
       .map(_.item)
-      .distinct()
-      .count()
+      .distinct
+      .count
   }
 
   /** Approximate approach */
