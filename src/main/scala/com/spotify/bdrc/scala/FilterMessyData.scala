@@ -47,10 +47,29 @@ object FilterMessyData {
    *
    * Try.toOption returns Some if the computation succeeds or None if it fails.
    * Option[U] is implicitly converted to TraversableOnce[U] that flatMap expects.
+   *
+   * WARNING: THIS APPROACH IGNORES ANY EXCEPTION AND IS POTENTIALLY UNSAFE.
    */
-  def withFlatMap(input: Seq[MessyData]): Seq[String] = {
+  def withUnsafeFlatMap(input: Seq[MessyData]): Seq[String] = {
     input
       .flatMap(x => Try(compute(x)).toOption)
+  }
+
+  /**
+   * Smart approach that throws any failed records away.
+   *
+   * Try/catch block returns a Seq of one item if compute succeeds and Nil if it fails.
+   * This approach is safer since you have control over what exceptions to expect.
+   */
+  def withSafeFlatMap(input: Seq[MessyData]): Seq[String] = {
+    input
+      .flatMap { x =>
+        try {
+          Seq(compute(x))
+        } catch {
+          case _: NullPointerException => Nil
+        }
+      }
   }
 
 }
