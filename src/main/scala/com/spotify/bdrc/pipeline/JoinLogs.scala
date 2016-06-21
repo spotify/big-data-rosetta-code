@@ -48,7 +48,7 @@ object JoinLogs {
     val saves = saveEvents.map(e => (e.user, ("save", e))).group
 
     plays
-      .cogroup(saves) { case (user, p, s) =>
+      .cogroup(saves) { (user, p, s) =>
         (p ++ s).toList
           .sortBy(_._2.timestamp)
           .sliding(2) // neighboring pairs
