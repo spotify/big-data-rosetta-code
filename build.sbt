@@ -17,5 +17,6 @@ libraryDependencies ++= Seq(
   "com.twitter" %% "scalding-core" % "0.16.0",
   "com.twitter" %% "algebird-spark" % "0.12.1",
   "org.apache.spark" %% "spark-core" % "1.6.2",
-  "org.apache.spark" %% "spark-mllib" % "1.6.2"
+  "org.apache.spark" %% "spark-mllib" % "1.6.2",
+  "org.scalacheck" %% "scalacheck" % "1.13.2" % "test"
 )
