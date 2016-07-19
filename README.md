@@ -9,6 +9,12 @@ Currently the following are covered:
 - [Scio](https://github.com/spotify/scio)
 - [Spark](https://github.com/apache/spark)
 
+# Topics
+
+- [src/main/scala/com/spotify/bdrc/scala](https://github.com/spotify/big-data-rosetta-code/tree/master/src/main/scala/com/spotify/bdrc/scala) Scala tricks for data processing
+- [src/main/scala/com/spotify/bdrc/pipeline](https://github.com/spotify/big-data-rosetta-code/tree/master/src/main/scala/com/spotify/bdrc/pipeline) Data pipeline snippets
+- [src/test/scala/com/spotify/bdrc/testing](https://github.com/spotify/big-data-rosetta-code/tree/master/src/test/scala/com/spotify/bdrc/testing) Examples for pipeline testing
+
 # License
 
 Copyright 2016 Spotify AB.
