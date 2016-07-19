@@ -54,7 +54,7 @@ object WordCount1 {
  * Very complex pipelines with lots of steps may be broken down into smaller logical blocks and
  * tested separately using the transform test approach.
  */
-class EndToEndTest extends PipelineSpec {
+class T01EndToEndTest extends PipelineSpec {
 
   val input = Seq("a b c d e", "a b a b")
   val expected = Seq("a: 3", "b: 3", "c: 1", "d: 1", "e: 1")
