@@ -19,7 +19,7 @@ package com.spotify.bdrc.testing
 
 import com.google.common.collect.MinMaxPriorityQueue
 import org.scalacheck.Prop.{BooleanOperators, all, forAll}
-import org.scalacheck.{Arbitrary, Gen, Properties}
+import org.scalacheck.{Gen, Properties}
 
 import scala.collection.JavaConverters._
 
