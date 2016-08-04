@@ -14,9 +14,9 @@ Currently the following are covered:
 
 # Topics
 
-- [src/main/scala/com/spotify/bdrc/scala](https://github.com/spotify/big-data-rosetta-code/tree/master/src/main/scala/com/spotify/bdrc/scala) Scala tricks for data processing
-- [src/main/scala/com/spotify/bdrc/pipeline](https://github.com/spotify/big-data-rosetta-code/tree/master/src/main/scala/com/spotify/bdrc/pipeline) Data pipeline snippets
-- [src/test/scala/com/spotify/bdrc/testing](https://github.com/spotify/big-data-rosetta-code/tree/master/src/test/scala/com/spotify/bdrc/testing) Examples for pipeline testing
+- [src/main/scala/com/spotify/bdrc/scala](./src/main/scala/com/spotify/bdrc/scala) Scala tricks for data processing
+- [src/main/scala/com/spotify/bdrc/pipeline](./src/main/scala/com/spotify/bdrc/pipeline) Data pipeline snippets
+- [src/test/scala/com/spotify/bdrc/testing](./src/test/scala/com/spotify/bdrc/testing) Examples for pipeline testing
 
 # License
 
