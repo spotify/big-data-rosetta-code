@@ -51,7 +51,7 @@ object WordCount2 {
  * - Does not cover argument parsing and IO handling
  * - May disrupt pipeline logic flow if overused
  *
- * Supported in: Scio, Spark
+ * Supported in: Scalding, Scio, Spark
  *
  * Recommendation:
  * Complex pipelines can be broken into logical blocks and tested using this approach. Individual
