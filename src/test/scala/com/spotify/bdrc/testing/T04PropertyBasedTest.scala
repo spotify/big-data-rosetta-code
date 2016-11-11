@@ -18,8 +18,10 @@
 package com.spotify.bdrc.testing
 
 import com.google.common.collect.MinMaxPriorityQueue
-import org.scalacheck.Prop.{BooleanOperators, all, forAll}
+import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Properties}
+import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import scala.collection.JavaConverters._
 
@@ -93,28 +95,33 @@ object Utils {
  * See AlgebirdSpec.scala for more examples of testing Algebird features using ScalaCheck
  * https://github.com/spotify/scio/blob/master/scio-examples/src/test/scala/com/spotify/scio/examples/extra/AlgebirdSpec.scala
  */
-object PropertyBasedTest extends Properties("Utils") {
+class PropertyBasedTest extends PropSpec with GeneratorDrivenPropertyChecks with Matchers {
 
-  property("top") = forAll { xs: Seq[Long] =>
-    Utils.top(xs, 5) == xs.sorted.reverse.take(5)
+  property("top") {
+    forAll { xs: Seq[Long] =>
+      Utils.top(xs, 5) shouldBe xs.sorted.reverse.take(5)
+    }
   }
 
-  property("split") = forAll { line: String =>
-    Utils.split(line).forall(_.matches("[a-z']+"))
+  property("split") {
+    forAll { line: String =>
+      Utils.split(line).forall(_.matches("[a-z']+"))
+    }
   }
 
   // Generator for List[Double] of 100 doubles between -100.0 and 100.0
   val genVector = Gen.listOfN(100, Gen.choose(-100.0, 100.0))
 
-  property("cosineSim") = forAll(genVector, genVector) { (v1, v2) =>
-    val s1 = Utils.cosineSim(v1, v2)
-    val s2 = Utils.cosineSim(v2, v1)
-    all (
-      (s1 >= -1.0 && s1 <= 1.0) :| "is between [-1.0, 1.0]",
-      (s1 == s2) :| "is symmetrical",
-      (Utils.cosineSim(v1, v1) == 1.0) :| "is 1.0 for (v, v)",
-      (Utils.cosineSim(v1, v1.map(-_)) == -1.0) :| "is -1.0 for (v, -v)"
-    )
+  property("cosineSim") {
+    forAll(genVector, genVector) { (v1, v2) =>
+      val s1 = Utils.cosineSim(v1, v2)
+      val s2 = Utils.cosineSim(v2, v1)
+
+      s1 should (be >= -1.0 and be <= 1.0)
+      s1 shouldBe s2
+      Utils.cosineSim(v1, v1) shouldBe 1.0
+      Utils.cosineSim(v1, v1.map(-_)) shouldBe -1.0
+    }
   }
 
 }
