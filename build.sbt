@@ -11,15 +11,15 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.spotify" %% "scio-core" % "0.2.5",
-  "com.spotify" %% "scio-extra" % "0.2.5",
-  "com.spotify" %% "scio-test" % "0.2.5" % "test",
+  "com.spotify" %% "scio-core" % "0.2.13",
+  "com.spotify" %% "scio-extra" % "0.2.13",
+  "com.spotify" %% "scio-test" % "0.2.13" % "test",
   "com.twitter" %% "scalding-core" % "0.16.0",
-  "com.twitter" %% "algebird-spark" % "0.12.2",
+  "com.twitter" %% "algebird-spark" % "0.13.0",
   "org.apache.spark" %% "spark-core" % "1.6.2",
   "org.apache.spark" %% "spark-mllib" % "1.6.2",
-  "org.scalacheck" %% "scalacheck" % "1.13.3" % "test",
-  "com.storm-enroute" %% "scalameter" % "0.7" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
+  "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"
 )
 
 val scalaMeterFramework = new TestFramework("org.scalameter.ScalaMeterFramework")
