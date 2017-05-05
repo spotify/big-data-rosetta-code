@@ -28,6 +28,7 @@ object WordCount4 {
     val wc = countWords(input)
     val output = formatOutput(wc)
     output.saveAsTextFile(args("output"))
+    sc.close()
   }
 
   // transforms
