@@ -11,13 +11,13 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.spotify" %% "scio-core" % "0.3.4",
-  "com.spotify" %% "scio-extra" % "0.3.4",
-  "com.spotify" %% "scio-test" % "0.3.4" % "test",
-  "com.twitter" %% "scalding-core" % "0.17.2",
+  "com.spotify" %% "scio-core" % "0.4.4",
+  "com.spotify" %% "scio-extra" % "0.4.4",
+  "com.spotify" %% "scio-test" % "0.4.4" % "test",
+  "com.twitter" %% "scalding-core" % "0.17.3",
   "com.twitter" %% "algebird-spark" % "0.13.0",
-  "org.apache.spark" %% "spark-core" % "1.6.3",
-  "org.apache.spark" %% "spark-mllib" % "1.6.3",
+  "org.apache.spark" %% "spark-core" % "2.1.2",
+  "org.apache.spark" %% "spark-mllib" % "2.1.2",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
   "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"
 )
