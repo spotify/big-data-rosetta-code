@@ -15,6 +15,8 @@
  * under the License.
  */
 
+// Example: Compute Collection of Distinct Items
+// Input is a collection of (user, item, score)
 package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
@@ -22,25 +24,23 @@ import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute collection of distinct items.
- *
- * Input is a collection of (user, item, score).
- */
 object DistinctItems {
 
+  // ## Scalding
   def scalding(input: TypedPipe[Rating]): TypedPipe[String] = {
     input
       .map(_.item)
       .distinct
   }
 
+  // ## Scio
   def scio(input: SCollection[Rating]): SCollection[String] = {
     input
       .map(_.item)
       .distinct
   }
 
+  // ## Spark
   def spark(input: RDD[Rating]): RDD[String] = {
     input
       .map(_.item)

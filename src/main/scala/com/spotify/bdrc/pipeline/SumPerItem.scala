@@ -15,6 +15,8 @@
  * under the License.
  */
 
+// Example: Compute the Sum of Scores per Item
+// Input is a collection of (user, item, score)
 package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
@@ -22,60 +24,62 @@ import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute the sum of scores per item.
- *
- * Input is a collection of (user, item, score).
- */
 object SumPerItem {
 
+  // ## Scalding
   def scalding(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     input
       .groupBy(_.item)
       .mapValues(_.score)
-      .sum  // implicit Semigroup[Double] from Algebird
+      // Sum per key with an implicit `Semigroup[Double]`
+      .sum
       .toTypedPipe
   }
 
+  // ## Scalding with Algebird `Aggregator`
   def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.Aggregator.prepareMonoid
     input
       .groupBy(_.item)
-      // an Algebird Aggregator that converts UserItemData to Double (via _.score) before reduce
+      // Aggregate per key with an aggregator that converts `UserItemData` to `Double` via
+      // `_.score` before reduce
       .aggregate(prepareMonoid(_.score))
       .toTypedPipe
   }
 
+  // ## Scio
   def scio(input: SCollection[Rating]): SCollection[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .sumByKey
   }
 
+  // ## Spark
   def spark(input: RDD[Rating]): RDD[(String, Double)] = {
     input
       .map(x => (x.item, x.score))
       .reduceByKey(_ + _)
   }
 
-  /** First algebird-spark approach using sumByKey on doubles. */
+  // ## Spark with Algebird `Semigroup`
   def sparkWithAlgebird1(input: RDD[Rating]): RDD[(String, Double)] = {
     import com.twitter.algebird.spark._
     input
       .map(x => (x.item, x.score))
       .algebird
-      .sumByKey  // implicit Semigroup[Double] from Algebird
+      // Sum per key with an implicit `Semigroup[Double]`
+      .sumByKey
   }
 
-  /** Second algebird-spark approach using aggregateByKey with prepare. */
+  // ## Spark with Algebird `Aggregator`
   def sparkWithAlgebird2(input: RDD[Rating]): RDD[(String, Double)] = {
     import com.twitter.algebird.Aggregator.prepareMonoid
     import com.twitter.algebird.spark._
     input
       .keyBy(_.item)
       .algebird
-      // an Algebird Aggregator that converts UserItemData to Double (via _.score) before reduce
-      // explicit type due to type inference limitation
+      // Aggregate per key with an aggregator that converts `UserItemData` to `Double` via
+      // `_.score` before reduce. Explicit type due to type inference limitation.
       .aggregateByKey(prepareMonoid { x: Rating => x.score })
   }
 

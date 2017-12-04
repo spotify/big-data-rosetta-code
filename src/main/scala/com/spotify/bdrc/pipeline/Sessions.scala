@@ -15,6 +15,8 @@
  * under the License.
  */
 
+// Example: Compute Session Duration and Number of Items from Log Data
+// Input is a collection of log events
 package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.LogEvent
@@ -26,26 +28,22 @@ import org.joda.time.Instant
 
 import scala.collection.mutable
 
-/**
- * Detect sessions from log and compute duration and number of items.
- *
- * Input is a collection of log events.
- */
 object Sessions {
 
   val gapDuration = 3600000
 
   case class Session(user: String, duration: Long, numItems: Int)
 
-  /** Wrapper for Iterator[LogEvent] that group items into sessions. */
+  // Wrapper for `Iterator[LogEvent]` that group items into sessions
   class SessionIterator(self: Iterator[LogEvent]) extends Iterator[Seq[LogEvent]] {
-    private val bi = self.buffered  // BufferedIterator allows peak ahead
+    // `BufferedIterator` allows peak ahead
+    private val bi = self.buffered
     override def hasNext: Boolean = bi.hasNext
     override def next(): Seq[LogEvent] = {
       val buf = mutable.Buffer(bi.next())
       var last = buf.head.timestamp
 
-      // consume subsequent events until a gap is detected
+      // Consume subsequent events until a gap is detected
       while (bi.hasNext && bi.head.timestamp - last < gapDuration) {
         val n = bi.next()
         buf.append(n)
@@ -55,42 +53,55 @@ object Sessions {
     }
   }
 
+  // ## Scalding
   def scalding(input: TypedPipe[LogEvent]): TypedPipe[Session] = {
     input
       .groupBy(_.user)
-      .sortBy(_.timestamp)  // secondary sort
-      // iterate over values lazily and group items into sessions
+      // `sortBy` uses Hadoop secondary sort to sort keys during shuffle
+      .sortBy(_.timestamp)
+      // Iterate over values lazily and group items into sessions
       .mapValueStream(new SessionIterator(_))
       .toTypedPipe
+      // Map over each (user, session items)
       .map { case (user, items) =>
         Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }
 
+  // ## Scio
   def scio(input: SCollection[LogEvent]): SCollection[Session] = {
     input
-      .timestampBy(e => new Instant(e.timestamp))  // values in groupBy are sorted by timestamp
-      .groupBy(_.user)  // no secondary sort in Scio
+      // Values in `groupBy` are sorted by timestamp
+      .timestampBy(e => new Instant(e.timestamp))
+      // No secondary sort in Scio, shuffle all items
+      .groupBy(_.user)
       .flatMapValues { _
         .iterator
-        .timeSeries(_.timestamp)  // generic version of SessionIterator from scio-extra
+        // Generic version of `SessionIterator` from `scio-extra`
+        .timeSeries(_.timestamp)
         .session(gapDuration)
       }
-      .map {case (user, items) =>
+      // Map over each (user, session items)
+      .map { case (user, items) =>
         Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }
 
+  // ## Spark
   def spark(input: RDD[LogEvent]): RDD[Session] = {
     input
-      .groupBy(_.user)  // no secondary sort in Spark
+      // No secondary sort in Spark, shuffle all items
+      .groupBy(_.user)
       .flatMapValues { _
-        .toList.sortBy(_.timestamp)  // order of values is not guaranteed
+        // Order of values after shuffle is not guaranteed
+        .toList.sortBy(_.timestamp)
         .iterator
-        .timeSeries(_.timestamp)  // generic version of SessionIterator from scio-extra
+        // Generic version of `SessionIterator` from `scio-extra`
+        .timeSeries(_.timestamp)
         .session(gapDuration)
       }
-      .map {case (user, items) =>
+      // Map over each (user, session items)
+      .map { case (user, items) =>
         Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }

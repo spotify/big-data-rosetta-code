@@ -15,6 +15,8 @@
  * under the License.
  */
 
+// Example: Count the Number of Items of a Given User
+// Input is a collection of (user, item, score)
 package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
@@ -22,24 +24,23 @@ import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute number of records of a given user.
- *
- * Input is a collection of (user, item, score).
- */
 object CountUsers {
 
+  // ## Scalding
   def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
       .filter(_.user == "Smith")
       .map(_ => 1L)
-      .sum  // implicit Semigroup[Long] from Algebird
+      // Sum with an implicit `Semigroup[Long]`
+      .sum
       .toTypedPipe
   }
 
+  // ## Sclading with Algebird `Aggregator`
   def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Long] = {
     import com.twitter.algebird.Aggregator.count
     input
+      // Aggregate globally into a single `Long`
       .aggregate(count(_.user == "Smith"))
       .toTypedPipe
   }
@@ -50,24 +51,29 @@ object CountUsers {
       .count
   }
 
+  // ## Scio with Algebird `Aggregator`
   def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
     import com.twitter.algebird.Aggregator.count
     input
-      .filter(_.user == "Smith")
+      // Aggregate globally into a single `Long`
       .aggregate(count(_.user == "Smith"))
   }
 
+  // ## Spark
   def spark(input: RDD[Rating]): Long = {
     input
       .filter(_.user == "Smith")
+      // `count` is an action and collects data back to the driver node
       .count()
   }
 
+  // ## Spark with Algebird `Aggregator`
   def sparkWithAlgebird(input: RDD[Rating]): Long = {
     import com.twitter.algebird.Aggregator.count
     import com.twitter.algebird.spark._
     input
       .algebird
+      // `aggregate` is an action and collects data back to the driver node
       .aggregate(count(_.user == "Smith"))
   }
 

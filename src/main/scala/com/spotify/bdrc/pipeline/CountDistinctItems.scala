@@ -15,6 +15,8 @@
  * under the License.
  */
 
+// Example: Count Number of Distinct Items
+// Input is a collection of (user, item, score)
 package com.spotify.bdrc.pipeline
 
 import com.google.common.base.Charsets
@@ -23,34 +25,33 @@ import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute number of distinct items.
- *
- * Input is a collection of (user, item, score).
- */
 object CountDistinctItems {
 
-  /** Exact approach */
+  // ## Scalding Exact Approach
   def scalding(input: TypedPipe[Rating]): TypedPipe[Long] = {
     input
       .map(_.item)
+      // Remove duplicates, requires a shuffle
       .distinct
       .map(_ => 1L)
-      .sum  // implicit Semigroup[Long] from Algebird
+      // Sum with an implicit `Semigroup[Long]`
+      .sum
       .toTypedPipe
   }
 
-  /** Approximate approach */
+  // ## Scalding Approximate Approach
   def scaldingApproxWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Double] = {
     import com.twitter.algebird.HyperLogLogAggregator
     val aggregator = HyperLogLogAggregator.sizeAggregator(bits = 12)
     input
-      .map(_.item.getBytes(Charsets.UTF_8))  // HyperLogLog expects bytes input
+      // `HyperLogLog` expects bytes input
+      .map(_.item.getBytes(Charsets.UTF_8))
+      // Aggregate globally into a `Double`
       .aggregate(aggregator)
       .toTypedPipe
   }
 
-  /** Exact approach */
+  // ## Scio Exact Approach
   def scio(input: SCollection[Rating]): SCollection[Long] = {
     input
       .map(_.item)
@@ -58,14 +59,14 @@ object CountDistinctItems {
       .count
   }
 
-  /** Approximate approach */
+  // ## Scio Approximate Approach
   def scioApprox(input: SCollection[Rating]): SCollection[Long] = {
     input
       .map(_.item)
       .countApproxDistinct()
   }
 
-  /** Exact approach */
+  // ## Spark Exact Approach
   def spark(input: RDD[Rating]): Long = {
     input
       .map(_.item)
@@ -73,7 +74,7 @@ object CountDistinctItems {
       .count()
   }
 
-  /** Approximate approach */
+  // ## Spark Approximate Approach
   def sparkApprox(input: RDD[Rating]): Long = {
     input
       .map(_.item)

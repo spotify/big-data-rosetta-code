@@ -15,40 +15,48 @@
  * under the License.
  */
 
+// Example: Build Inverted Index
+// Build inverted index from a corpus of text documents
+
+// Input is a collection of (id, text)
 package com.spotify.bdrc.pipeline
 
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute inverted index from a corpus of documents.
- *
- * Input is a collection of (id, text).
- */
 object InvertedIndex {
 
   case class Document(id: Int, text: String)
   case class Posting(word: String, ids: Seq[Int])
 
+  // ## Scalding
   def scalding(input: TypedPipe[Document]): TypedPipe[Posting] = {
     input
+      // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
+      // Group and convert document IDs per key to `List[Int]`
       .group
       .toList
       .map(Posting.tupled)
   }
 
+  // ## Scio
   def scio(input: SCollection[Document]): SCollection[Posting] = {
     input
+      // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
+      // Group document IDs per key into `Iterable[Int]`
       .groupByKey
       .map(kv => Posting(kv._1, kv._2.toSeq))
   }
 
+  // ## Spark
   def spark(input: RDD[Document]): RDD[Posting] = {
     input
+      // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
+      // Group document IDs per key into `Iterable[Int]`
       .groupByKey()
       .map(kv => Posting(kv._1, kv._2.toSeq))
   }

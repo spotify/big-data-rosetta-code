@@ -15,48 +15,45 @@
  * under the License.
  */
 
+// Example: Compute Basic Descriptive Statistics for Each Field
+// Input is a collection of case classes
 package com.spotify.bdrc.pipeline
 
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-/**
- * Compute basic statistics for each field.
- *
- * Input is a collection of case classes.
- */
 object FieldStatistics {
 
   case class User(age: Int, income: Double, score: Double)
   case class Stats(max: Double, min: Double, mean: Double, stddev: Double)
   case class UserStats(age: Stats, income: Stats, score: Stats)
 
-  // Algebird Aggregator
+  // ## Algebird `Aggregator`
   def aggregator = {
     import com.twitter.algebird._
 
-    /*
-    3 aggregators on age field with different logic
+    // Create 3 `Aggregator`s on `age` field with different logic
 
-    The first 3 aggregators are of type Aggregator[User, _, Double] which means it takes User as
-    input and outputs Double. The last aggregator is of type Aggregator[Rating, _, Moments].
-    The input User is prepared with a (User => Double) function _.age.
-     */
+    // The first 2 are of type `Aggregator[User, _, Int]` which means it takes `User` as input and
+    // generates `Int` as output. The last one is of type `Aggregator[User, _, Moments]`,
+    // where `Moments` include count, mean, standard deviation, etc. The input `User` is prepared
+    // with a `User => Int` function `_.age`.
     val maxAgeOp = Aggregator.max[Int].composePrepare[User](_.age)
     val minAgeOp = Aggregator.min[Int].composePrepare[User](_.age)
     val momentsAgeOp = Moments.aggregator.composePrepare[User](_.age)
 
-    // 3 aggregators on income field with different logic
+    // Create 3 `Aggregator`s on `income` field with different logic
     val maxIncomeOp = Aggregator.max[Double].composePrepare[User](_.income)
     val minIncomeOp = Aggregator.min[Double].composePrepare[User](_.income)
     val momentsIncomeOp = Moments.aggregator.composePrepare[User](_.income)
 
-    // 3 aggregators on score field with different logic
+    // Create 3 `Aggregator`s on `score` field with different logic
     val maxScoreOp = Aggregator.max[Double].composePrepare[User](_.score)
     val minScoreOp = Aggregator.min[Double].composePrepare[User](_.score)
     val momentsScoreOp = Moments.aggregator.composePrepare[User](_.score)
 
+    // Apply 12 `Aggregator`s on the same input, present result tuple 12 as `UserStats`.
     MultiAggregator(
       maxAgeOp, minAgeOp, momentsAgeOp,
       maxIncomeOp, minIncomeOp, momentsIncomeOp,
@@ -70,16 +67,19 @@ object FieldStatistics {
       }
   }
 
+  // ## Scalding
   def scalding(input: TypedPipe[User]): TypedPipe[UserStats] = {
     input.aggregate(aggregator)
   }
 
+  // ## Scio
   def scio(input: SCollection[User]): SCollection[UserStats] = {
     input.aggregate(aggregator)
   }
 
+  // ## Spark
   def spark(input: RDD[User]): UserStats = {
-    // compute each field separately, potentially in-efficient if input is not cached
+    // Compute each field separately, potentially in-efficient if input is not cached
     val s1 = input.map(_.age).stats()
     val s2 = input.map(_.income).stats()
     val s3 = input.map(_.score).stats()
@@ -89,6 +89,7 @@ object FieldStatistics {
       score = Stats(s3.max, s3.min, s3.mean, s3.stdev))
   }
 
+  // ## Spark with Algebird `Aggregator`
   def sparkAlgebird(input: RDD[User]): UserStats = {
     import com.twitter.algebird.spark._
     input.algebird.aggregate(aggregator)
