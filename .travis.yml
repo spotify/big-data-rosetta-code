@@ -17,4 +17,4 @@ script:
 
 notifications:
   email:
-    - neville@spotify.com
+    - flatmap-squad@spotify.com
