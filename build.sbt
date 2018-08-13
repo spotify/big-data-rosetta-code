@@ -21,6 +21,14 @@ organization := "com.spotify"
 name := "big-data-rosetta-code"
 version := "0.1.0-SNAPSHOT"
 
+val scioVersion = "0.5.6"
+val scaldingVersion = "0.17.4"
+val sparkVersion = "2.2.2"
+val flinkVersion = "1.6.0"
+val algebirdVersion = "0.13.0"
+val scalacheckVersion = "1.14.0"
+val scalameterVersion = "0.8.2"
+
 scalaVersion := "2.11.12"
 scalacOptions ++= Seq("-target:jvm-1.8", "-deprecation", "-feature", "-unchecked")
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -30,15 +38,15 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.spotify" %% "scio-core" % "0.5.1",
-  "com.spotify" %% "scio-extra" % "0.5.1",
-  "com.spotify" %% "scio-test" % "0.5.1" % "test",
-  "com.twitter" %% "scalding-core" % "0.17.3",
-  "com.twitter" %% "algebird-spark" % "0.13.0",
-  "org.apache.spark" %% "spark-core" % "2.1.2",
-  "org.apache.spark" %% "spark-mllib" % "2.1.2",
-  "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-  "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"
+  "com.spotify" %% "scio-core" % scioVersion,
+  "com.spotify" %% "scio-extra" % scioVersion,
+  "com.spotify" %% "scio-test" % scioVersion % "test",
+  "com.twitter" %% "scalding-core" % scaldingVersion,
+  "com.twitter" %% "algebird-spark" % algebirdVersion,
+  "org.apache.spark" %% "spark-core" % sparkVersion,
+  "org.apache.spark" %% "spark-mllib" % sparkVersion,
+  "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test",
+  "com.storm-enroute" %% "scalameter" % scalameterVersion % "test"
 )
 
 val scalaMeterFramework = new TestFramework("org.scalameter.ScalaMeterFramework")
