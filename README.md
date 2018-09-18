@@ -6,6 +6,10 @@ big-data-rosetta-code
 
 Code snippets for solving common big data problems on various platforms. Inspired by [Rosetta Code](http://rosettacode.org/).
 
+For examples rended side by side with comments see:
+
+http://spotify.github.io/big-data-rosetta-code/
+
 Currently the following are covered:
 
 - [Scalding](https://github.com/twitter/scalding)
