@@ -50,7 +50,7 @@ object MaxItemPerUser {
     input
       .keyBy(_.user)
       // Compute top one item per key as an `Iterable[Rating]`
-      .topByKey(1)(Ordering.by(_.score))
+      .topByKey(1, Ordering.by(_.score))
       // Drop user key
       .values
       // Flatten result `Iterable[Rating]`
