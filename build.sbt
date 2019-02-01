@@ -32,6 +32,7 @@ scalaVersion := "2.12.8"
 scalacOptions ++= Seq("-target:jvm-1.8", "-deprecation", "-feature", "-unchecked")
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
+resolvers += "Cascading libraries" at "http://conjars.org/repo"
 libraryDependencies ++= Seq(
   "com.spotify" %% "scio-core" % scioVersion,
   "com.spotify" %% "scio-extra" % scioVersion,
