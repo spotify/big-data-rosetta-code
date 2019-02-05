@@ -18,7 +18,8 @@
 package com.spotify.bdrc.testing
 
 import com.spotify.scio._
-import com.spotify.scio.testing._
+import com.spotify.scio.io.TextIO
+import com.spotify.scio.testing.PipelineSpec
 
 object WordCount1 {
   def main(cmdlineArgs: Array[String]): Unit = {

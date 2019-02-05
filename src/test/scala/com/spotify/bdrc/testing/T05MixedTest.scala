@@ -18,7 +18,8 @@
 package com.spotify.bdrc.testing
 
 import com.spotify.scio._
-import com.spotify.scio.testing._
+import com.spotify.scio.io.TextIO
+import com.spotify.scio.testing.PipelineSpec
 import com.spotify.scio.values.SCollection
 
 object WordCount4 {

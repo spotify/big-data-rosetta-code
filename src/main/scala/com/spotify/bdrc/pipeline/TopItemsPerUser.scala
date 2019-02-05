@@ -45,7 +45,7 @@ object TopItemsPerUser {
     input
       .keyBy(_.user)
       // Compute top K per key
-      .topByKey(topK)(Ordering.by(_.score))
+      .topByKey(topK, Ordering.by(_.score))
       // Drop user key
       .values
       // Flatten result `Iterable[Rating]`
