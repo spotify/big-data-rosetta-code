@@ -26,7 +26,7 @@ val scaldingVersion = "0.17.4"
 val sparkVersion = "2.4.0"
 val algebirdVersion = "0.13.5"
 val scalacheckVersion = "1.14.0"
-val scalameterVersion = "0.10.1"
+val scalameterVersion = "0.17"
 
 scalaVersion := "2.12.8"
 scalacOptions ++= Seq("-target:jvm-1.8", "-deprecation", "-feature", "-unchecked")
