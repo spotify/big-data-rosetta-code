@@ -59,7 +59,7 @@ scalacOptions ++= Seq(
   "-P:socco:package_org.apache.spark:http://spark.apache.org/docs/latest/api/scala"
 )
 autoCompilerPlugins := true
-addCompilerPlugin("com.criteo.socco" %% "socco-plugin" % "0.1.9")
+addCompilerPlugin("com.criteo.socco" %% "socco-plugin" % "0.1.10")
 
 lazy val soccoIndex = taskKey[File]("Generates examples/index.html")
 soccoIndex := SoccoIndex.generate(target.value / "socco" / "index.html")
