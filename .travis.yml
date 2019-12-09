@@ -3,17 +3,19 @@ scala:
   - 2.12.8
 jdk: openjdk8
 
+before_cache:
+  - rm -fv $HOME/.ivy2/.sbt.ivy.lock
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+  - find $HOME/.sbt        -name "*.lock"               -print -delete
+
 cache:
   directories:
-    - $HOME/.sbt/boot
+    - $HOME/.cache/coursier
     - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean test;
-
-  # Tricks to avoid unnecessary cache updates
-  - find $HOME/.sbt -name "*.lock" | xargs rm
-  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 
 notifications:
   email:
