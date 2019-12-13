@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sbt clean compile ghpagesPushSite
+sbt makeSite ghpagesPushSite
