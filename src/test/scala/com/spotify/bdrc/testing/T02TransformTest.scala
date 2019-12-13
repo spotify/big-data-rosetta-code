@@ -72,14 +72,14 @@ class TransformTest extends PipelineSpec {
   "countWords" should "work" in {
     runWithContext { sc =>
       val in = sc.parallelize(input)
-      WordCount2.countWords(in) should containInAnyOrder (intermediate)
+      WordCount2.countWords(in) should containInAnyOrder(intermediate)
     }
   }
 
   "formatOutput" should "work" in {
     runWithContext { sc =>
       val in = sc.parallelize(intermediate)
-      WordCount2.formatOutput(in) should containInAnyOrder (expected)
+      WordCount2.formatOutput(in) should containInAnyOrder(expected)
     }
   }
 

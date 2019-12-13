@@ -42,8 +42,13 @@ object SoccoIndex {
 
   def isScala(f: File): Boolean = f.isFile && f.getName.endsWith(".scala")
 
-  case class Source(file: String, section: String, title: String, url: String,
-                    objects: List[String])
+  case class Source(
+    file: String,
+    section: String,
+    title: String,
+    url: String,
+    objects: List[String]
+  )
 
   // Find all source files
   private def sources = {
@@ -67,9 +72,10 @@ object SoccoIndex {
       }
   }
 
-  def mappings: Seq[(File, String)] = Seq(
-    new File(s"target/socco/index.html") -> s"index.html"
-  ) ++ sources.map(s => new File(s"target/socco/${s.file}.html") -> s"${s.file}.html")
+  def mappings: Seq[(File, String)] =
+    Seq(
+      new File(s"target/socco/index.html") -> s"index.html"
+    ) ++ sources.map(s => new File(s"target/socco/${s.file}.html") -> s"${s.file}.html")
 
   def generate(outFile: File): File = {
     outFile.getParentFile.mkdirs()

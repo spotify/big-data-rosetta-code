@@ -80,7 +80,9 @@ object SumPerItem {
       .algebird
       // Aggregate per key with an aggregator that converts `UserItemData` to `Double` via
       // `_.score` before reduce. Explicit type due to type inference limitation.
-      .aggregateByKey(prepareMonoid { x: Rating => x.score })
+      .aggregateByKey(prepareMonoid { x: Rating =>
+        x.score
+      })
   }
 
 }

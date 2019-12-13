@@ -22,7 +22,7 @@
 // - RHS input is a small collection of (user, age).
 package com.spotify.bdrc.pipeline
 
-import com.spotify.bdrc.util.Records.{UserMeta, LogEvent}
+import com.spotify.bdrc.util.Records.{LogEvent, UserMeta}
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -30,8 +30,10 @@ import org.apache.spark.rdd.RDD
 object JoinLogAndMetadata {
 
   // ## Scalding Naive Approach
-  def scaldingNaive(left: TypedPipe[LogEvent],
-                    right: TypedPipe[UserMeta]): TypedPipe[(String, Double)] = {
+  def scaldingNaive(
+    left: TypedPipe[LogEvent],
+    right: TypedPipe[UserMeta]
+  ): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
     left
       .groupBy(_.user)
@@ -40,8 +42,9 @@ object JoinLogAndMetadata {
       // Drop user key
       .values
       // Map into (track, age)
-      .map { case (logEvent, userMeta) =>
-        (logEvent.track, userMeta.age.toDouble)
+      .map {
+        case (logEvent, userMeta) =>
+          (logEvent.track, userMeta.age.toDouble)
       }
       .group
       // Aggregate average age per track
@@ -51,8 +54,10 @@ object JoinLogAndMetadata {
 
   // ## Scalding with Hash Join
   // `hashJoin` replicates the smaller RHS to all mappers on the LHS
-  def scaldingHashJoin(left: TypedPipe[LogEvent],
-                       right: TypedPipe[UserMeta]): TypedPipe[(String, Double)] = {
+  def scaldingHashJoin(
+    left: TypedPipe[LogEvent],
+    right: TypedPipe[UserMeta]
+  ): TypedPipe[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
 
     // Map out fields to avoid shuffing large objects
@@ -69,13 +74,16 @@ object JoinLogAndMetadata {
   }
 
   // ## Scio Naive Approach
-  def scioNaive(left: SCollection[LogEvent],
-                right: SCollection[UserMeta]): SCollection[(String, Double)] = {
+  def scioNaive(
+    left: SCollection[LogEvent],
+    right: SCollection[UserMeta]
+  ): SCollection[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
     val lhs = left.map(e => (e.user, e.track))
     val rhs = right.map(u => (u.user, u.age.toDouble))
     // Join as (user, (track, age))
-    lhs.join(rhs)
+    lhs
+      .join(rhs)
       // Drop user key to make track as new key in (track, age)
       .values
       // Aggregate average age per track
@@ -84,15 +92,18 @@ object JoinLogAndMetadata {
 
   // ## Scio with Side Input
   // Side input makes RHS available on all workers
-  def scioSideInput(left: SCollection[LogEvent],
-                    right: SCollection[UserMeta]): SCollection[(String, Double)] = {
+  def scioSideInput(
+    left: SCollection[LogEvent],
+    right: SCollection[UserMeta]
+  ): SCollection[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
 
     // Convert RHS to a side input of `Map[String, Double]`
     val rhs = right.map(u => (u.user, u.age.toDouble)).asMapSideInput
 
     // Replicate RHS to each worker
-    left.withSideInputs(rhs)
+    left
+      .withSideInputs(rhs)
       // Access side input via the context
       .map { case (e, sideContext) => (e.track, sideContext(rhs).getOrElse(e.user, 0.0)) }
       // Convert back to regular SCollection
@@ -102,12 +113,15 @@ object JoinLogAndMetadata {
 
   // ## Scio with Hash Join
   // `hashJoin` is a short cut to the side input approach
-  def scioHashJoin(left: SCollection[LogEvent],
-                   right: SCollection[UserMeta]): SCollection[(String, Double)] = {
+  def scioHashJoin(
+    left: SCollection[LogEvent],
+    right: SCollection[UserMeta]
+  ): SCollection[(String, Double)] = {
     import com.twitter.algebird.AveragedValue
     val lhs = left.map(e => (e.user, e.track))
     val rhs = right.map(u => (u.user, u.age.toDouble))
-    lhs.hashJoin(rhs)
+    lhs
+      .hashJoin(rhs)
       .values
       .aggregateByKey(AveragedValue.aggregator)
   }
@@ -119,7 +133,8 @@ object JoinLogAndMetadata {
     val lhs = left.map(e => (e.user, e.track))
     val rhs = right.map(u => (u.user, u.age.toDouble))
     // Join as (user, (track, age))
-    lhs.join(rhs)
+    lhs
+      .join(rhs)
       // Drop user key to make track as new key in (track, age)
       .values
       .algebird
@@ -140,7 +155,7 @@ object JoinLogAndMetadata {
     val b = sc.broadcast(map)
 
     left
-      // In-memory lookup on each worker
+    // In-memory lookup on each worker
       .map(e => (e.track, b.value.getOrElse(e.user, 0.0)))
       .algebird
       .aggregateByKey(AveragedValue.aggregator)

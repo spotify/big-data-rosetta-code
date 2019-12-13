@@ -36,10 +36,10 @@ object FilterMessyData {
     input
       .filter { x =>
         x.user != null && x.gender != null &&
-          x.scores != null && x.scores.nonEmpty &&
-          x.favorites != null && x.favorites.nonEmpty
+        x.scores != null && x.scores.nonEmpty &&
+        x.favorites != null && x.favorites.nonEmpty
       }
-      .map(compute)  // may still fail for unexpected cases
+      .map(compute) // may still fail for unexpected cases
   }
 
   /**
@@ -50,10 +50,9 @@ object FilterMessyData {
    *
    * WARNING: THIS APPROACH IGNORES ANY EXCEPTION AND IS POTENTIALLY UNSAFE.
    */
-  def withUnsafeFlatMap(input: Seq[MessyData]): Seq[String] = {
+  def withUnsafeFlatMap(input: Seq[MessyData]): Seq[String] =
     input
       .flatMap(x => Try(compute(x)).toOption)
-  }
 
   /**
    * Smart approach that throws any failed records away.

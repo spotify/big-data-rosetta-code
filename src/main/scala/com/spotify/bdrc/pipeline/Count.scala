@@ -44,10 +44,8 @@ object Count {
   }
 
   // ## Scio
-  def scio(input: SCollection[Rating]): SCollection[Long] = {
-    input
-      .count
-  }
+  def scio(input: SCollection[Rating]): SCollection[Long] =
+    input.count
 
   // ## Scio with Algebird `Aggregator`
   def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
@@ -59,17 +57,16 @@ object Count {
   // # Spark
   def spark(input: RDD[Rating]): Long = {
     input
-      // `count` is an action and collects data back to the driver node
-      .count
+    // `count` is an action and collects data back to the driver node
+    .count
   }
 
   // ## Spark with Algebird `Aggregator`
   def sparkWithAlgebird(input: RDD[Rating]): Long = {
     import com.twitter.algebird.Aggregator.size
     import com.twitter.algebird.spark._
-    input
-      .algebird
-      // `aggregate` is an action and collects data back to the driver node
+    input.algebird
+    // `aggregate` is an action and collects data back to the driver node
       .aggregate(size)
   }
 

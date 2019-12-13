@@ -35,7 +35,7 @@ object JoinLogs {
   def detectPlaySaveSequence(pair: Seq[(String, LogEvent)]): Option[String] = {
     val Seq(first, second) = pair
     if (first._1 == "play" && second._1 == "save" && first._2.track == second._2.track &&
-      second._2.timestamp - first._2.timestamp <= gapDuration) {
+        second._2.timestamp - first._2.timestamp <= gapDuration) {
       Some(first._2.track)
     } else {
       None
@@ -43,8 +43,10 @@ object JoinLogs {
   }
 
   // ## Scalding
-  def scalding(playEvents: TypedPipe[LogEvent],
-               saveEvents: TypedPipe[LogEvent]): TypedPipe[(String, String)] = {
+  def scalding(
+    playEvents: TypedPipe[LogEvent],
+    saveEvents: TypedPipe[LogEvent]
+  ): TypedPipe[(String, String)] = {
     // Map inputs to key-values and add event type information
     val plays = playEvents.map(e => (e.user, ("play", e))).group
     val saves = saveEvents.map(e => (e.user, ("save", e))).group
@@ -62,20 +64,24 @@ object JoinLogs {
   }
 
   // ## Scio
-  def scio(playEvents: SCollection[LogEvent],
-           saveEvents: SCollection[LogEvent]): SCollection[(String, String)] = {
+  def scio(
+    playEvents: SCollection[LogEvent],
+    saveEvents: SCollection[LogEvent]
+  ): SCollection[(String, String)] = {
     // Map inputs to key-values and add event type information
     val plays = playEvents.map(e => (e.user, ("play", e)))
     val saves = saveEvents.map(e => (e.user, ("save", e)))
 
-    plays.cogroup(saves)
+    plays
+      .cogroup(saves)
       // `Iterable`s of play and save events for the user
-      .flatMapValues { case (p, s) =>
-        (p ++ s).toList
-          .sortBy(_._2.timestamp)
-          // Neighboring pairs
-          .sliding(2)
-          .flatMap(detectPlaySaveSequence)
+      .flatMapValues {
+        case (p, s) =>
+          (p ++ s).toList
+            .sortBy(_._2.timestamp)
+            // Neighboring pairs
+            .sliding(2)
+            .flatMap(detectPlaySaveSequence)
       }
   }
 
@@ -85,14 +91,16 @@ object JoinLogs {
     val plays = playEvents.map(e => (e.user, ("play", e)))
     val saves = saveEvents.map(e => (e.user, ("save", e)))
 
-    plays.cogroup(saves)
-      .flatMapValues { case (p, s) =>
-        // `Iterable`s of play and save events for the user
-        (p ++ s).toList
-          .sortBy(_._2.timestamp)
-          // Neighboring pairs
-          .sliding(2)
-          .flatMap(detectPlaySaveSequence)
+    plays
+      .cogroup(saves)
+      .flatMapValues {
+        case (p, s) =>
+          // `Iterable`s of play and save events for the user
+          (p ++ s).toList
+            .sortBy(_._2.timestamp)
+            // Neighboring pairs
+            .sliding(2)
+            .flatMap(detectPlaySaveSequence)
       }
   }
 

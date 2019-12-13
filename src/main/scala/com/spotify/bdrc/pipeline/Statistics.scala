@@ -26,9 +26,7 @@ import org.apache.spark.rdd.RDD
 
 object Statistics {
 
-  case class Stats(max: Double, min: Double,
-                   sum: Double, count: Long,
-                   mean: Double, stddev: Double)
+  case class Stats(max: Double, min: Double, sum: Double, count: Long, mean: Double, stddev: Double)
 
   // ## Algebird `Aggregator`
   def aggregator = {
@@ -38,7 +36,7 @@ object Statistics {
 
     // The first 3 are of type `Aggregator[Rating, _, Double]` which means it takes `Rating` as
     // input and generates `Double` as output. The last one is of type
-    // `Aggregator[Rating, _, Moments]`, where `Moments` include count, mean, standard deviation, 
+    // `Aggregator[Rating, _, Moments]`, where `Moments` include count, mean, standard deviation,
     // etc. The input `Rating` is prepared with a `Rating => Double` function `_.score`.
     val maxOp = Aggregator.max[Double].composePrepare[Rating](_.score)
     val minOp = Aggregator.min[Double].composePrepare[Rating](_.score)
@@ -48,15 +46,15 @@ object Statistics {
     // Apply 4 `Aggregator`s on the same input, present result tuple 4 of
     // `(Double, Double, Double, Moments)` as `Stats`
     MultiAggregator(maxOp, minOp, sumOp, momentsOp)
-      .andThenPresent { case (max, min, sum, moments) =>
-        Stats(max, min, sum, moments.count, moments.mean, moments.stddev)
+      .andThenPresent {
+        case (max, min, sum, moments) =>
+          Stats(max, min, sum, moments.count, moments.mean, moments.stddev)
       }
   }
 
   // ## Scalding
-  def scalding(input: TypedPipe[Rating]): TypedPipe[Stats] = {
+  def scalding(input: TypedPipe[Rating]): TypedPipe[Stats] =
     input.aggregate(aggregator)
-  }
 
   // ## Scio
   def scio(input: SCollection[Rating]): SCollection[Stats] = {
@@ -67,9 +65,8 @@ object Statistics {
   }
 
   // ## Scio with Algebird `Aggregator`
-  def scioAlgebird(input: SCollection[Rating]): SCollection[Stats] = {
+  def scioAlgebird(input: SCollection[Rating]): SCollection[Stats] =
     input.aggregate(aggregator)
-  }
 
   // ## Spark
   def spark(input: RDD[Rating]): Stats = {

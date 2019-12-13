@@ -59,11 +59,11 @@ object WordCount3 {
 class FunctionTest extends FlatSpec with Matchers {
 
   "split" should "work" in {
-    WordCount3.split("a b,c d\te\n\nf") should equal (Seq("a", "b", "c", "d", "e", "f"))
+    WordCount3.split("a b,c d\te\n\nf") should equal(Seq("a", "b", "c", "d", "e", "f"))
   }
 
   "format" should "work" in {
-    WordCount3.format(("a", 10L)) should equal ("a: 10")
+    WordCount3.format(("a", 10L)) should equal("a: 10")
   }
 
 }

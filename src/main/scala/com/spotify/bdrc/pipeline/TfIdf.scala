@@ -34,13 +34,14 @@ object TfIdf {
     val numDocs = input.size
 
     val docToTerms = input
-      .map { case (doc, pipe) =>
-        pipe
-          .flatMap(_.split("\\W+").filter(_.nonEmpty))
-          .map(t => (doc, t.toLowerCase))
+      .map {
+        case (doc, pipe) =>
+          pipe
+            .flatMap(_.split("\\W+").filter(_.nonEmpty))
+            .map(t => (doc, t.toLowerCase))
       }
       // union input collections
-      .reduce(_ ++ _)  // (d, t)
+      .reduce(_ ++ _) // (d, t)
 
     val docToTermAndFreq = docToTerms
       .groupBy(identity)
@@ -48,20 +49,17 @@ object TfIdf {
       .toTypedPipe
       .map { case ((d, t), tf) => (d, (t, tf)) }
 
-    val termToDfN = docToTerms
-      .distinct
-      .values
+    val termToDfN = docToTerms.distinct.values
       .groupBy(identity)
-      .size  // (t, df)
-      .mapValues(_.toDouble / numDocs)  // (t, df/N)
+      .size // (t, df)
+      .mapValues(_.toDouble / numDocs) // (t, df/N)
 
-    docToTerms
-      .keys
+    docToTerms.keys
       .groupBy(identity)
-      .size  // (d, |d|)
+      .size // (d, |d|)
       .join(docToTermAndFreq)
       .toTypedPipe
-      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) }  // (t, (d, tf/|d|))
+      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) } // (t, (d, tf/|d|))
       .join(termToDfN)
       .toTypedPipe
       .map { case (t, ((d, tfd), dfN)) => Score(t, d, tfd * math.log(1 / dfN)) }
@@ -71,35 +69,33 @@ object TfIdf {
     val numDocs = input.size
 
     val docToTerms = input
-      .map { case (doc, pipe) =>
-        pipe
-          .flatMap(_.split("\\W+").filter(_.nonEmpty))
-          .map(t => (doc, t.toLowerCase))
+      .map {
+        case (doc, pipe) =>
+          pipe
+            .flatMap(_.split("\\W+").filter(_.nonEmpty))
+            .map(t => (doc, t.toLowerCase))
       }
       // union input collections
-      .reduce(_ ++ _)  // (d, t)
+      .reduce(_ ++ _) // (d, t)
 
     val docToTermAndCFreq = docToTerms
-      // equivalent to .countByValue but returns RDD instead of Map
+    // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
       .reduceByKey(_ + _)
-      .map{ case ((d, t), tf) => (d, (t, tf)) }
+      .map { case ((d, t), tf) => (d, (t, tf)) }
 
-    val termToDfN = docToTerms
-      .distinct
-      .values
-      // equivalent to .countByValue but returns RDD instead of Map
+    val termToDfN = docToTerms.distinct.values
+    // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
-      .reduceByKey(_ + _)  // (t, df)
-      .mapValues(_.toDouble / numDocs)  // (t, df/N)
+      .reduceByKey(_ + _) // (t, df)
+      .mapValues(_.toDouble / numDocs) // (t, df/N)
 
-    docToTerms
-      .keys
-      // equivalent to .countByValue but returns RDD instead of Map
+    docToTerms.keys
+    // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
-      .reduceByKey(_ + _)  // (d, |d|)
+      .reduceByKey(_ + _) // (d, |d|)
       .join(docToTermAndCFreq)
-      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) }  // (t, (d, tf/|d|))
+      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) } // (t, (d, tf/|d|))
       .join(termToDfN)
       .map { case (t, ((d, tfd), dfN)) => Score(t, d, tfd * math.log(1 / dfN)) }
   }
@@ -109,36 +105,36 @@ object TfIdf {
     val numDocs = input.size
 
     val docToTerms = input
-      .map { case (doc, pipe) =>
-        pipe
-          .flatMap(_.split("\\W+").filter(_.nonEmpty))
-          .map(t => (doc, t.toLowerCase))
+      .map {
+        case (doc, pipe) =>
+          pipe
+            .flatMap(_.split("\\W+").filter(_.nonEmpty))
+            .map(t => (doc, t.toLowerCase))
       }
       // union input collections
-      .reduce(_ ++ _)  // (d, t)
-      .cache()  // docToTerms is reused 3 times
+      .reduce(_ ++ _) // (d, t)
+      .cache() // docToTerms is reused 3 times
 
     val docToTermAndCFreq = docToTerms
-      // equivalent to .countByValue but returns RDD instead of Map
+    // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
       .reduceByKey(_ + _)
-      .map{ case ((d, t), tf) => (d, (t, tf)) }
+      .map { case ((d, t), tf) => (d, (t, tf)) }
 
     val termToDfN = docToTerms
       .distinct()
       .values
       // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
-      .reduceByKey(_ + _)  // (t, df)
-      .mapValues(_.toDouble / numDocs)  // (t, df/N)
+      .reduceByKey(_ + _) // (t, df)
+      .mapValues(_.toDouble / numDocs) // (t, df/N)
 
-    docToTerms
-      .keys
-      // equivalent to .countByValue but returns RDD instead of Map
+    docToTerms.keys
+    // equivalent to .countByValue but returns RDD instead of Map
       .map((_, 1L))
-      .reduceByKey(_ + _)  // (d, |d|)
+      .reduceByKey(_ + _) // (d, |d|)
       .join(docToTermAndCFreq)
-      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) }  // (t, (d, tf/|d|))
+      .map { case (d, (dLen, (t, tf))) => (t, (d, tf.toDouble / dLen)) } // (t, (d, tf/|d|))
       .join(termToDfN)
       .map { case (t, ((d, tfd), dfN)) => Score(t, d, tfd * math.log(1 / dfN)) }
   }
@@ -148,37 +144,38 @@ object TfIdf {
     val numDocs = input.size
 
     val docToTerms = input
-      .map { case (doc, pipe) =>
-        pipe
-          .flatMap(_.split("\\W+").filter(_.nonEmpty))
-          .map(t => (doc, t.toLowerCase))
+      .map {
+        case (doc, pipe) =>
+          pipe
+            .flatMap(_.split("\\W+").filter(_.nonEmpty))
+            .map(t => (doc, t.toLowerCase))
       }
-      .reduce(_ ++ _)  // (d, t)
-      .cache()  // docToTerms is reused 3 times
+      .reduce(_ ++ _) // (d, t)
+      .cache() // docToTerms is reused 3 times
 
     val docToTermAndCFreq = docToTerms
       .countByValue()
       // performed on driver node
-      .map{ case ((d, t), tf) => (d, (t, tf)) }
+      .map { case ((d, t), tf) => (d, (t, tf)) }
 
     val termToDfN = docToTerms
       .distinct()
       .values
-      .countByValue()  // (t, df)
+      .countByValue() // (t, df)
       // performed on driver node
-      .mapValues(_.toDouble / numDocs)  // (t, df/N)
+      .mapValues(_.toDouble / numDocs) // (t, df/N)
 
-    docToTerms
-      .keys
-      .countByValue()  // (d, |d|)
+    docToTerms.keys
+      .countByValue() // (d, |d|)
       // performed on driver node
       .toSeq
-      .map { case (d, dLen) =>
-        val (t, tf) = docToTermAndCFreq(d)
-        //(t, (d, tf.toDouble / dLen))  // (t, (d, tf/|d|))
-        val tfd = tf.toDouble / dLen
-        val dfN = termToDfN(t)
-        Score(t, d, tfd * math.log(1 / dfN))
+      .map {
+        case (d, dLen) =>
+          val (t, tf) = docToTermAndCFreq(d)
+          //(t, (d, tf.toDouble / dLen))  // (t, (d, tf/|d|))
+          val tfd = tf.toDouble / dLen
+          val dfN = termToDfN(t)
+          Score(t, d, tfd * math.log(1 / dfN))
       }
   }
 

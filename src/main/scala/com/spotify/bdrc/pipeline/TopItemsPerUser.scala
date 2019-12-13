@@ -55,7 +55,7 @@ object TopItemsPerUser {
   // ## Spark Naive Approach
   def spark(input: RDD[Rating]): RDD[Rating] = {
     input
-      // `groupBy` shuffles all data, inefficient
+    // `groupBy` shuffles all data, inefficient
       .groupBy(_.user)
       // Drop user key
       .values

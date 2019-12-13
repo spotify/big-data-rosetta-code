@@ -72,7 +72,7 @@ object AverageScorePerItem {
       // Map into (sum, count)
       .mapValues(x => (x.score, 1L))
       // Reduce both per key with `plus = (T, T) => T` where `T` is `(Double, Long)`
-      .reduceByKey(sg.plus)  // plus: (T, T) => T where T is (Double, Long)
+      .reduceByKey(sg.plus) // plus: (T, T) => T where T is (Double, Long)
       // Map (sum, count) into average
       .mapValues(p => p._1 / p._2)
   }

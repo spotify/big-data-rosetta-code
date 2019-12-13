@@ -63,46 +63,51 @@ object Sessions {
       .mapValueStream(new SessionIterator(_))
       .toTypedPipe
       // Map over each (user, session items)
-      .map { case (user, items) =>
-        Session(user, items.last.timestamp - items.head.timestamp, items.size)
+      .map {
+        case (user, items) =>
+          Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }
 
   // ## Scio
   def scio(input: SCollection[LogEvent]): SCollection[Session] = {
     input
-      // Values in `groupBy` are sorted by timestamp
+    // Values in `groupBy` are sorted by timestamp
       .timestampBy(e => new Instant(e.timestamp))
       // No secondary sort in Scio, shuffle all items
       .groupBy(_.user)
-      .flatMapValues { _
-        .iterator
+      .flatMapValues {
+        _.iterator
         // Generic version of `SessionIterator` from `scio-extra`
-        .timeSeries(_.timestamp)
-        .session(gapDuration)
+          .timeSeries(_.timestamp)
+          .session(gapDuration)
       }
       // Map over each (user, session items)
-      .map { case (user, items) =>
-        Session(user, items.last.timestamp - items.head.timestamp, items.size)
+      .map {
+        case (user, items) =>
+          Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }
 
   // ## Spark
   def spark(input: RDD[LogEvent]): RDD[Session] = {
     input
-      // No secondary sort in Spark, shuffle all items
+    // No secondary sort in Spark, shuffle all items
       .groupBy(_.user)
-      .flatMapValues { _
+      .flatMapValues {
+        _
         // Order of values after shuffle is not guaranteed
-        .toList.sortBy(_.timestamp)
-        .iterator
-        // Generic version of `SessionIterator` from `scio-extra`
-        .timeSeries(_.timestamp)
-        .session(gapDuration)
+        .toList
+          .sortBy(_.timestamp)
+          .iterator
+          // Generic version of `SessionIterator` from `scio-extra`
+          .timeSeries(_.timestamp)
+          .session(gapDuration)
       }
       // Map over each (user, session items)
-      .map { case (user, items) =>
-        Session(user, items.last.timestamp - items.head.timestamp, items.size)
+      .map {
+        case (user, items) =>
+          Session(user, items.last.timestamp - items.head.timestamp, items.size)
       }
   }
 
