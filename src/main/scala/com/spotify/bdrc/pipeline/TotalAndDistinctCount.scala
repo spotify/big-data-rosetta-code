@@ -39,37 +39,39 @@ object TotalAndDistinctCount {
   def scaldingExact(input: TypedPipe[String]): TypedPipe[(Long, Long)] = {
     input
       .map((_, 1L))
-      .group.sum  // (key, total count per key)
+      .group
+      .sum // (key, total count per key)
       .toTypedPipe
       .map(kv => (kv._1, (kv._2, 1L)))
-      .group.sum  // (key, (total count, distinct count))
+      .group
+      .sum // (key, (total count, distinct count))
       .values
   }
 
-  def scaldingApproximate(input: TypedPipe[String]): TypedPipe[(Long, Long)] = {
+  def scaldingApproximate(input: TypedPipe[String]): TypedPipe[(Long, Long)] =
     input.aggregate(aggregator)
-  }
 
   def scioExact(input: SCollection[String]): SCollection[(Long, Long)] = {
     input
       .map((_, 1L))
-      .sumByKey  // (key, total count per key)
+      .sumByKey // (key, total count per key)
       .map(kv => (kv._1, (kv._2, 1L)))
-      .sumByKey  // (key, (total count, distinct count))
+      .sumByKey // (key, (total count, distinct count))
       .values
   }
 
-  def scioApproximate(input: SCollection[String]): SCollection[(Long, Long)] = {
+  def scioApproximate(input: SCollection[String]): SCollection[(Long, Long)] =
     input.aggregate(aggregator)
-  }
 
   def sparkAlgebird(input: RDD[String]): RDD[(Long, Long)] = {
     import com.twitter.algebird.spark._
     input
       .map((_, 1L))
-      .algebird.sumByKey[String, Long]  // (key, total count per key)
+      .algebird
+      .sumByKey[String, Long] // (key, total count per key)
       .map(kv => (kv._1, (kv._2, 1L)))
-      .algebird.sumByKey[String, (Long, Long)]  // (key, (total count, distinct count))
+      .algebird
+      .sumByKey[String, (Long, Long)] // (key, (total count, distinct count))
       .values
   }
 

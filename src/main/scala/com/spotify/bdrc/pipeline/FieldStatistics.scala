@@ -55,27 +55,32 @@ object FieldStatistics {
 
     // Apply 12 `Aggregator`s on the same input, present result tuple 12 as `UserStats`.
     MultiAggregator(
-      maxAgeOp, minAgeOp, momentsAgeOp,
-      maxIncomeOp, minIncomeOp, momentsIncomeOp,
-      maxScoreOp, minScoreOp, momentsScoreOp)
-      .andThenPresent { t =>
+      maxAgeOp,
+      minAgeOp,
+      momentsAgeOp,
+      maxIncomeOp,
+      minIncomeOp,
+      momentsIncomeOp,
+      maxScoreOp,
+      minScoreOp,
+      momentsScoreOp
+    ).andThenPresent { t =>
         val (maxAge, minAge, mAge, maxIncome, minIncome, mIncome, maxScore, minScore, mScore) = t
         UserStats(
           age = Stats(maxAge, minAge, mAge.mean, mAge.stddev),
           income = Stats(maxIncome, minIncome, mIncome.mean, mIncome.stddev),
-          score = Stats(maxScore, minScore, mScore.mean, mScore.stddev))
+          score = Stats(maxScore, minScore, mScore.mean, mScore.stddev)
+        )
       }
   }
 
   // ## Scalding
-  def scalding(input: TypedPipe[User]): TypedPipe[UserStats] = {
+  def scalding(input: TypedPipe[User]): TypedPipe[UserStats] =
     input.aggregate(aggregator)
-  }
 
   // ## Scio
-  def scio(input: SCollection[User]): SCollection[UserStats] = {
+  def scio(input: SCollection[User]): SCollection[UserStats] =
     input.aggregate(aggregator)
-  }
 
   // ## Spark
   def spark(input: RDD[User]): UserStats = {
@@ -86,7 +91,8 @@ object FieldStatistics {
     UserStats(
       age = Stats(s1.max, s1.min, s1.mean, s1.stdev),
       income = Stats(s2.max, s2.min, s2.mean, s2.stdev),
-      score = Stats(s3.max, s3.min, s3.mean, s3.stdev))
+      score = Stats(s3.max, s3.min, s3.mean, s3.stdev)
+    )
   }
 
   // ## Spark with Algebird `Aggregator`

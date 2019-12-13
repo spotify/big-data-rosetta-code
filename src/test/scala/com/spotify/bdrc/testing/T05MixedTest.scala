@@ -57,11 +57,11 @@ class MixedTest extends PipelineSpec {
   // Function tests
 
   "split" should "work" in {
-    WordCount3.split("a b,c d\te\n\nf") should equal (Seq("a", "b", "c", "d", "e", "f"))
+    WordCount3.split("a b,c d\te\n\nf") should equal(Seq("a", "b", "c", "d", "e", "f"))
   }
 
   "format" should "work" in {
-    WordCount3.format(("a", 10L)) should equal ("a: 10")
+    WordCount3.format(("a", 10L)) should equal("a: 10")
   }
 
   // Transform tests
@@ -69,14 +69,14 @@ class MixedTest extends PipelineSpec {
   "countWords" should "work" in {
     runWithContext { sc =>
       val in = sc.parallelize(input)
-      WordCount4.countWords(in) should containInAnyOrder (intermediate)
+      WordCount4.countWords(in) should containInAnyOrder(intermediate)
     }
   }
 
   "formatOutput" should "work" in {
     runWithContext { sc =>
       val in = sc.parallelize(intermediate)
-      WordCount4.formatOutput(in) should containInAnyOrder (expected)
+      WordCount4.formatOutput(in) should containInAnyOrder(expected)
     }
   }
 
@@ -87,7 +87,7 @@ class MixedTest extends PipelineSpec {
       .args("--input=in.txt", "--output=out.txt")
       .input(TextIO("in.txt"), input)
       .output(TextIO("out.txt")) { output =>
-        output should containInAnyOrder (expected)
+        output should containInAnyOrder(expected)
       }
       .run()
   }

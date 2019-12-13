@@ -64,7 +64,9 @@ object MaxItemPerUser {
       .keyBy(_.user)
       // Aggregate per key into a single `Rating` based on `Double` value via `_.score`. Explicit
       // type due to type inference limitation.
-      .aggregateByKey(maxBy { x: Rating => x.score})
+      .aggregateByKey(maxBy { x: Rating =>
+        x.score
+      })
       .values
   }
 
@@ -86,7 +88,9 @@ object MaxItemPerUser {
       .algebird
       // Aggregate per key into a single `Rating` based on `Double` value via `_.score`. Explicit
       // type due to type inference limitation.
-      .aggregateByKey(maxBy { x: Rating => x.score })
+      .aggregateByKey(maxBy { x: Rating =>
+        x.score
+      })
       .values
   }
 

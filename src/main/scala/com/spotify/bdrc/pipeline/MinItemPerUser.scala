@@ -64,7 +64,9 @@ object MinItemPerUser {
       .keyBy(_.user)
       // Aggregate per key into a single `Rating` based on `Double` value via `_.score`. Explicit
       // type due to type inference limitation.
-      .aggregateByKey(minBy { x: Rating => x.score})
+      .aggregateByKey(minBy { x: Rating =>
+        x.score
+      })
       .values
   }
 
@@ -86,7 +88,9 @@ object MinItemPerUser {
       .algebird
       // Aggregate per key into a single `Rating` based on `Double` value via `_.score`. Explicit
       // type due to type inference limitation.
-      .aggregateByKey(minBy { x: Rating => x.score })
+      .aggregateByKey(minBy { x: Rating =>
+        x.score
+      })
       .values
   }
 

@@ -66,7 +66,7 @@ class T01EndToEndTest extends PipelineSpec {
       .args("--input=in.txt", "--output=out.txt")
       .input(TextIO("in.txt"), input)
       .output(TextIO("out.txt")) { output =>
-        output should containInAnyOrder (expected)
+        output should containInAnyOrder(expected)
       }
       .run()
   }

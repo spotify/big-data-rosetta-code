@@ -33,7 +33,7 @@ object InvertedIndex {
   // ## Scalding
   def scalding(input: TypedPipe[Document]): TypedPipe[Posting] = {
     input
-      // Split text and output (word, document ID)
+    // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
       // Group and convert document IDs per key to `List[Int]`
       .group
@@ -44,7 +44,7 @@ object InvertedIndex {
   // ## Scio
   def scio(input: SCollection[Document]): SCollection[Posting] = {
     input
-      // Split text and output (word, document ID)
+    // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
       // Group document IDs per key into `Iterable[Int]`
       .groupByKey
@@ -54,7 +54,7 @@ object InvertedIndex {
   // ## Spark
   def spark(input: RDD[Document]): RDD[Posting] = {
     input
-      // Split text and output (word, document ID)
+    // Split text and output (word, document ID)
       .flatMap(d => d.text.split("[^a-zA-Z']+").map(w => (w, d.id)))
       // Group document IDs per key into `Iterable[Int]`
       .groupByKey()

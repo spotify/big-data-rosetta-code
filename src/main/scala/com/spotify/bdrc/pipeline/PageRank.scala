@@ -32,10 +32,8 @@ object PageRank {
   val dampingFactor = 0.85
 
   def scalding(input: TypedPipe[(String, String)]): TypedPipe[(String, Double)] = {
-    val links = input
-      .group
-      .toList  // (src URL, list of dst URL)
-    var ranks = input.keys.distinct.map((_, 1.0))  // (src URL, 1.0)
+    val links = input.group.toList // (src URL, list of dst URL)
+    var ranks = input.keys.distinct.map((_, 1.0)) // (src URL, 1.0)
 
     for (i <- 1 to 10) {
       val contribs = links
@@ -43,13 +41,12 @@ object PageRank {
         .toTypedPipe
         .values
         // re-distribute rank of src URL among collection of dst URLs
-        .flatMap { case (urls, rank) =>
-          val size = urls.size
-          urls.map((_, rank / size))
+        .flatMap {
+          case (urls, rank) =>
+            val size = urls.size
+            urls.map((_, rank / size))
         }
-      ranks = contribs
-        .group
-        .sum
+      ranks = contribs.group.sum
         .mapValues((1 - dampingFactor) + dampingFactor * _)
         .toTypedPipe
     }
@@ -65,12 +62,12 @@ object PageRank {
       val contribs = links
         .join(ranks)
         .values
-        .flatMap { case (urls, rank) =>
-          val size = urls.size
-          urls.map((_, rank / size))
+        .flatMap {
+          case (urls, rank) =>
+            val size = urls.size
+            urls.map((_, rank / size))
         }
-      ranks = contribs
-        .sumByKey
+      ranks = contribs.sumByKey
         .mapValues((1 - dampingFactor) + dampingFactor * _)
     }
 
@@ -79,18 +76,19 @@ object PageRank {
 
   def spark(input: RDD[(String, String)]): RDD[(String, Double)] = {
     val links = input
-      .groupByKey()  // (src URL, iterable of dst URL)
-      .cache()  // links is reused in every iteration
-    var ranks = links.mapValues(_ => 1.0)  // (src URL, 1.0)
+      .groupByKey() // (src URL, iterable of dst URL)
+      .cache() // links is reused in every iteration
+    var ranks = links.mapValues(_ => 1.0) // (src URL, 1.0)
 
     for (i <- 1 to 10) {
       val contribs = links
         .join(ranks)
         .values
         // re-distribute rank of src URL among collection of dst URLs
-        .flatMap { case (urls, rank) =>
-          val size = urls.size
-          urls.map((_, rank / size))
+        .flatMap {
+          case (urls, rank) =>
+            val size = urls.size
+            urls.map((_, rank / size))
         }
       ranks = contribs
         .reduceByKey(_ + _)
