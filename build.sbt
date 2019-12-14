@@ -25,7 +25,7 @@ val scioVersion = "0.7.4"
 val scaldingVersion = "0.17.4"
 val sparkVersion = "2.4.4"
 val algebirdVersion = "0.13.6"
-val scalacheckVersion = "1.14.2"
+val scalacheckVersion = "1.14.3"
 val scalameterVersion = "0.19"
 
 scalaVersion := "2.12.8"
