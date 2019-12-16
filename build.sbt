@@ -28,6 +28,8 @@ val sparkVersion = "2.4.4"
 val algebirdVersion = "0.13.6"
 val scalacheckVersion = "1.14.3"
 val scalameterVersion = "0.19"
+val scalatestVersion = "3.1.0"
+val scalatestPlusVersion = "3.1.0.0-RC2"
 
 scalaVersion := "2.12.8"
 scalacOptions ++= Seq(
@@ -47,6 +49,8 @@ libraryDependencies ++= Seq(
   "com.twitter" %% "algebird-spark" % algebirdVersion,
   "org.apache.spark" %% "spark-core" % sparkVersion,
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
+  "org.scalatest" %% "scalatest" % scalatestVersion % "test",
+  "org.scalatestplus" %% "scalatestplus-scalacheck" % scalatestPlusVersion % "test",
   "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test",
   "com.storm-enroute" %% "scalameter" % scalameterVersion % "test"
 )

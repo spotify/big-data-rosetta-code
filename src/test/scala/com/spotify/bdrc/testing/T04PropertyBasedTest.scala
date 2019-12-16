@@ -20,8 +20,9 @@ package com.spotify.bdrc.testing
 import com.google.common.collect.MinMaxPriorityQueue
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Properties}
-import org.scalatest.{Matchers, PropSpec}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatest.propspec.AnyPropSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import scala.collection.JavaConverters._
 
@@ -95,7 +96,7 @@ object Utils {
  * See AlgebirdSpec.scala for more examples of testing Algebird features using ScalaCheck
  * https://github.com/spotify/scio/blob/master/scio-examples/src/test/scala/com/spotify/scio/examples/extra/AlgebirdSpec.scala
  */
-class PropertyBasedTest extends PropSpec with GeneratorDrivenPropertyChecks with Matchers {
+class PropertyBasedTest extends AnyPropSpec with ScalaCheckDrivenPropertyChecks with Matchers {
 
   property("top") {
     forAll { xs: Seq[Long] =>
