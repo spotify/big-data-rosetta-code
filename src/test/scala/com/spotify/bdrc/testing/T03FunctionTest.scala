@@ -18,7 +18,8 @@
 package com.spotify.bdrc.testing
 
 import com.spotify.scio._
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 object WordCount3 {
   def main(cmdlineArgs: Array[String]): Unit = {
@@ -56,7 +57,7 @@ object WordCount3 {
  * higher level (transform or end-to-end), e.g. user session analysis after grouping by user key,
  * can also be tested with this approach.
  */
-class FunctionTest extends FlatSpec with Matchers {
+class FunctionTest extends AnyFlatSpec with Matchers {
 
   "split" should "work" in {
     WordCount3.split("a b,c d\te\n\nf") should equal(Seq("a", "b", "c", "d", "e", "f"))
