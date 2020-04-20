@@ -29,7 +29,7 @@ object WordCount1 {
       .countByValue
       .map(kv => kv._1 + ": " + kv._2)
       .saveAsTextFile(args("output"))
-    sc.close()
+    sc.run()
   }
 }
 
