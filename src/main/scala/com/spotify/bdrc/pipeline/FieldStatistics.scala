@@ -65,13 +65,13 @@ object FieldStatistics {
       minScoreOp,
       momentsScoreOp
     ).andThenPresent { t =>
-        val (maxAge, minAge, mAge, maxIncome, minIncome, mIncome, maxScore, minScore, mScore) = t
-        UserStats(
-          age = Stats(maxAge, minAge, mAge.mean, mAge.stddev),
-          income = Stats(maxIncome, minIncome, mIncome.mean, mIncome.stddev),
-          score = Stats(maxScore, minScore, mScore.mean, mScore.stddev)
-        )
-      }
+      val (maxAge, minAge, mAge, maxIncome, minIncome, mIncome, maxScore, minScore, mScore) = t
+      UserStats(
+        age = Stats(maxAge, minAge, mAge.mean, mAge.stddev),
+        income = Stats(maxIncome, minIncome, mIncome.mean, mIncome.stddev),
+        score = Stats(maxScore, minScore, mScore.mean, mScore.stddev)
+      )
+    }
   }
 
   // ## Scalding

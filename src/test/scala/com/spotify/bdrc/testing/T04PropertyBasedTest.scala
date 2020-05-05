@@ -99,15 +99,11 @@ object Utils {
 class PropertyBasedTest extends AnyPropSpec with ScalaCheckDrivenPropertyChecks with Matchers {
 
   property("top") {
-    forAll { xs: Seq[Long] =>
-      Utils.top(xs, 5) shouldBe xs.sorted.reverse.take(5)
-    }
+    forAll { xs: Seq[Long] => Utils.top(xs, 5) shouldBe xs.sorted.reverse.take(5) }
   }
 
   property("split") {
-    forAll { line: String =>
-      Utils.split(line).forall(_.matches("[a-z']+"))
-    }
+    forAll { line: String => Utils.split(line).forall(_.matches("[a-z']+")) }
   }
 
   // Generator for List[Double] of 100 doubles between -100.0 and 100.0

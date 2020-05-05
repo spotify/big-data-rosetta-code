@@ -86,9 +86,7 @@ class MixedTest extends PipelineSpec {
     JobTest[com.spotify.bdrc.testing.WordCount4.type]
       .args("--input=in.txt", "--output=out.txt")
       .input(TextIO("in.txt"), input)
-      .output(TextIO("out.txt")) { output =>
-        output should containInAnyOrder(expected)
-      }
+      .output(TextIO("out.txt"))(output => output should containInAnyOrder(expected))
       .run()
   }
 

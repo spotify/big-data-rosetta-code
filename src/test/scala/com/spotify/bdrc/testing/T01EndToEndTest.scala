@@ -65,9 +65,7 @@ class T01EndToEndTest extends PipelineSpec {
     JobTest[com.spotify.bdrc.testing.WordCount1.type]
       .args("--input=in.txt", "--output=out.txt")
       .input(TextIO("in.txt"), input)
-      .output(TextIO("out.txt")) { output =>
-        output should containInAnyOrder(expected)
-      }
+      .output(TextIO("out.txt"))(output => output should containInAnyOrder(expected))
       .run()
   }
 

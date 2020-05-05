@@ -32,9 +32,7 @@ object HandlingOptions {
   /** Naive approach that checks every field accessed is defined. */
   def naive(input: Seq[Metadata]): Seq[(String, Int)] = {
     input
-      .filter { m =>
-        m.track.isDefined && m.track.get.artist.isDefined && m.audio.isDefined
-      }
+      .filter(m => m.track.isDefined && m.track.get.artist.isDefined && m.audio.isDefined)
       .map { m =>
         // Option[T].get is safe since we already checked with Option[T].isDefined
         (m.track.get.artist.get.id, m.audio.get.tempo)
@@ -61,11 +59,7 @@ object HandlingOptions {
   def withNestedFlatMap(input: Seq[Metadata]): Seq[(String, Int)] = {
     input.flatMap { md =>
       md.track.flatMap { tr =>
-        tr.artist.flatMap { ar =>
-          md.audio.map { au =>
-            (ar.id, au.tempo)
-          }
-        }
+        tr.artist.flatMap(ar => md.audio.map(au => (ar.id, au.tempo)))
       }
     }
   }
