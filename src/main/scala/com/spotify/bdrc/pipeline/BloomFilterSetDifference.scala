@@ -22,8 +22,6 @@ import com.twitter.algebird._
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
-import scala.language.higherKinds
-
 /**
  * Filter LHS by removing items that exist in the RHS using a Bloom Filter.
  *

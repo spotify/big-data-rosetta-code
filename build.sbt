@@ -36,7 +36,8 @@ scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-deprecation",
   "-feature",
-  "-unchecked"
+  "-unchecked",
+  "-language:higherKinds"
 )
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
