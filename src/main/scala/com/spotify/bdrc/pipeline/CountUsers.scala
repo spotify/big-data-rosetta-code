@@ -56,7 +56,7 @@ object CountUsers {
     import com.twitter.algebird.Aggregator.count
     input
     // Aggregate globally into a single `Long`
-      .aggregate(count(_.user == "Smith"))
+      .aggregate(count((_: Rating).user == "Smith"))
   }
 
   // ## Spark

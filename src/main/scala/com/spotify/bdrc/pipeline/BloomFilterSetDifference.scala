@@ -22,6 +22,8 @@ import com.twitter.algebird._
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
 
+import scala.language.higherKinds
+
 /**
  * Filter LHS by removing items that exist in the RHS using a Bloom Filter.
  *
@@ -42,7 +44,7 @@ object BloomFilterSetDifference {
     val width = BloomFilter.optimalWidth(1000, 0.01).get
     val numHashes = BloomFilter.optimalNumHashes(1000, width)
     lhs
-      .cross(rhs.aggregate(BloomFilterAggregator(numHashes, width)))
+      .cross(rhs.aggregate(BloomFilterAggregator[String](numHashes, width)))
       .filter { case (s, bf) => bf.contains(s).isTrue }
       .keys
   }
