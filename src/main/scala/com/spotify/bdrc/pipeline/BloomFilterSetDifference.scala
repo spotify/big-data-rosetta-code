@@ -42,7 +42,7 @@ object BloomFilterSetDifference {
     val width = BloomFilter.optimalWidth(1000, 0.01).get
     val numHashes = BloomFilter.optimalNumHashes(1000, width)
     lhs
-      .cross(rhs.aggregate(BloomFilterAggregator(numHashes, width)))
+      .cross(rhs.aggregate(BloomFilterAggregator[String](numHashes, width)))
       .filter { case (s, bf) => bf.contains(s).isTrue }
       .keys
   }
