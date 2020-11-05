@@ -1,7 +1,7 @@
 big-data-rosetta-code
 =====================
 
-[![Build Status](https://travis-ci.org/spotify/big-data-rosetta-code.svg?branch=master)](https://travis-ci.org/spotify/big-data-rosetta-code)
+[![Build Status](https://img.shields.io/github/workflow/status/spotify/big-data-rosetta-code/CI)](https://github.com/spotify/big-data-rosetta-code/actions?query=workflow%3ACI)
 [![GitHub license](https://img.shields.io/github/license/spotify/big-data-rosetta-code.svg)](./LICENSE)
 
 Code snippets for solving common big data problems on various platforms. Inspired by [Rosetta Code](http://rosettacode.org/).
