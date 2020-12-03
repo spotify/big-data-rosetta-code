@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.0
       - name: Cache sbt
-        uses: coursier/cache-action@v3
+        uses: coursier/cache-action@v5
       - name: Java 8 setup
         uses: olafurpg/setup-scala@v7
         with:
