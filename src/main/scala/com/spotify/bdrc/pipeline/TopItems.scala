@@ -68,7 +68,7 @@ object TopItems {
       // Sum values with an implicit `Semigroup[Double]`
       .sumByKey
       // Compute top K as an `Iterable[(String, Double)]`
-      .top(topK, Ordering.by(_._2))
+      .top(topK)(Ordering.by(_._2))
       // Flatten result `Iterable[(String, Double)]`
       .flatten
   }
