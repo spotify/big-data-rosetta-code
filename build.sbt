@@ -31,7 +31,7 @@ val scalameterVersion = "0.19"
 val scalatestVersion = "3.2.6"
 val scalatestPlusVersion = "3.1.0.0-RC2"
 
-scalaVersion := "2.12.11"
+scalaVersion := "2.12.13"
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-deprecation",
@@ -71,6 +71,7 @@ soccoPackage := List(
   "com.twitter.scalding:http://twitter.github.io/scalding/api",
   "org.apache.spark:http://spark.apache.org/docs/latest/api/scala"
 )
+addCompilerPlugin(("io.regadas" %% "socco-ng" % "0.1.4").cross(CrossVersion.full))
 makeSite := makeSite.dependsOn(Compile / compile).value
 gitRemoteRepo := "git@github.com:spotify/big-data-rosetta-code.git"
 
