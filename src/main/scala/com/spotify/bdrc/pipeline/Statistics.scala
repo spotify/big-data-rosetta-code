@@ -46,9 +46,8 @@ object Statistics {
     // Apply 4 `Aggregator`s on the same input, present result tuple 4 of
     // `(Double, Double, Double, Moments)` as `Stats`
     MultiAggregator(maxOp, minOp, sumOp, momentsOp)
-      .andThenPresent {
-        case (max, min, sum, moments) =>
-          Stats(max, min, sum, moments.count, moments.mean, moments.stddev)
+      .andThenPresent { case (max, min, sum, moments) =>
+        Stats(max, min, sum, moments.count, moments.mean, moments.stddev)
       }
   }
 

@@ -40,7 +40,7 @@ object CountUsers {
   def scaldingWithAlgebird(input: TypedPipe[Rating]): TypedPipe[Long] = {
     import com.twitter.algebird.Aggregator.count
     input
-    // Aggregate globally into a single `Long`
+      // Aggregate globally into a single `Long`
       .aggregate(count(_.user == "Smith"))
       .toTypedPipe
   }
@@ -55,7 +55,7 @@ object CountUsers {
   def scioWithAlgebird(input: SCollection[Rating]): SCollection[Long] = {
     import com.twitter.algebird.Aggregator.count
     input
-    // Aggregate globally into a single `Long`
+      // Aggregate globally into a single `Long`
       .aggregate(count((_: Rating).user == "Smith"))
   }
 
@@ -72,7 +72,7 @@ object CountUsers {
     import com.twitter.algebird.Aggregator.count
     import com.twitter.algebird.spark._
     input.algebird
-    // `aggregate` is an action and collects data back to the driver node
+      // `aggregate` is an action and collects data back to the driver node
       .aggregate(count(_.user == "Smith"))
   }
 

@@ -41,10 +41,9 @@ object PageRank {
         .toTypedPipe
         .values
         // re-distribute rank of src URL among collection of dst URLs
-        .flatMap {
-          case (urls, rank) =>
-            val size = urls.size
-            urls.map((_, rank / size))
+        .flatMap { case (urls, rank) =>
+          val size = urls.size
+          urls.map((_, rank / size))
         }
       ranks = contribs.group.sum
         .mapValues((1 - dampingFactor) + dampingFactor * _)
@@ -62,10 +61,9 @@ object PageRank {
       val contribs = links
         .join(ranks)
         .values
-        .flatMap {
-          case (urls, rank) =>
-            val size = urls.size
-            urls.map((_, rank / size))
+        .flatMap { case (urls, rank) =>
+          val size = urls.size
+          urls.map((_, rank / size))
         }
       ranks = contribs.sumByKey
         .mapValues((1 - dampingFactor) + dampingFactor * _)
@@ -85,10 +83,9 @@ object PageRank {
         .join(ranks)
         .values
         // re-distribute rank of src URL among collection of dst URLs
-        .flatMap {
-          case (urls, rank) =>
-            val size = urls.size
-            urls.map((_, rank / size))
+        .flatMap { case (urls, rank) =>
+          val size = urls.size
+          urls.map((_, rank / size))
         }
       ranks = contribs
         .reduceByKey(_ + _)

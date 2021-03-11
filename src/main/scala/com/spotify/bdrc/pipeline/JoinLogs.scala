@@ -34,8 +34,10 @@ object JoinLogs {
   // Detect if a pair of (event type, LogEvent) tuples match a play and save sequence
   def detectPlaySaveSequence(pair: Seq[(String, LogEvent)]): Option[String] = {
     val Seq(first, second) = pair
-    if (first._1 == "play" && second._1 == "save" && first._2.track == second._2.track &&
-        second._2.timestamp - first._2.timestamp <= gapDuration) {
+    if (
+      first._1 == "play" && second._1 == "save" && first._2.track == second._2.track &&
+      second._2.timestamp - first._2.timestamp <= gapDuration
+    ) {
       Some(first._2.track)
     } else {
       None
@@ -75,13 +77,12 @@ object JoinLogs {
     plays
       .cogroup(saves)
       // `Iterable`s of play and save events for the user
-      .flatMapValues {
-        case (p, s) =>
-          (p ++ s).toList
-            .sortBy(_._2.timestamp)
-            // Neighboring pairs
-            .sliding(2)
-            .flatMap(detectPlaySaveSequence)
+      .flatMapValues { case (p, s) =>
+        (p ++ s).toList
+          .sortBy(_._2.timestamp)
+          // Neighboring pairs
+          .sliding(2)
+          .flatMap(detectPlaySaveSequence)
       }
   }
 
@@ -93,14 +94,13 @@ object JoinLogs {
 
     plays
       .cogroup(saves)
-      .flatMapValues {
-        case (p, s) =>
-          // `Iterable`s of play and save events for the user
-          (p ++ s).toList
-            .sortBy(_._2.timestamp)
-            // Neighboring pairs
-            .sliding(2)
-            .flatMap(detectPlaySaveSequence)
+      .flatMapValues { case (p, s) =>
+        // `Iterable`s of play and save events for the user
+        (p ++ s).toList
+          .sortBy(_._2.timestamp)
+          // Neighboring pairs
+          .sliding(2)
+          .flatMap(detectPlaySaveSequence)
       }
   }
 

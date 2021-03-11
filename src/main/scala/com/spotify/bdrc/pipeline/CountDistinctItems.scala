@@ -44,7 +44,7 @@ object CountDistinctItems {
     import com.twitter.algebird.HyperLogLogAggregator
     val aggregator = HyperLogLogAggregator.sizeAggregator(bits = 12)
     input
-    // `HyperLogLog` expects bytes input
+      // `HyperLogLog` expects bytes input
       .map(_.item.getBytes(Charsets.UTF_8))
       // Aggregate globally into a `Double`
       .aggregate(aggregator)

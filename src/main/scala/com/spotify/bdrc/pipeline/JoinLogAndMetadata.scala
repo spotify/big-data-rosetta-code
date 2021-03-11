@@ -42,9 +42,8 @@ object JoinLogAndMetadata {
       // Drop user key
       .values
       // Map into (track, age)
-      .map {
-        case (logEvent, userMeta) =>
-          (logEvent.track, userMeta.age.toDouble)
+      .map { case (logEvent, userMeta) =>
+        (logEvent.track, userMeta.age.toDouble)
       }
       .group
       // Aggregate average age per track
@@ -155,7 +154,7 @@ object JoinLogAndMetadata {
     val b = sc.broadcast(map)
 
     left
-    // In-memory lookup on each worker
+      // In-memory lookup on each worker
       .map(e => (e.track, b.value.getOrElse(e.user, 0.0)))
       .algebird
       .aggregateByKey(AveragedValue.aggregator)

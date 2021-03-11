@@ -57,8 +57,8 @@ object Count {
   // # Spark
   def spark(input: RDD[Rating]): Long = {
     input
-    // `count` is an action and collects data back to the driver node
-    .count
+      // `count` is an action and collects data back to the driver node
+      .count
   }
 
   // ## Spark with Algebird `Aggregator`
@@ -66,7 +66,7 @@ object Count {
     import com.twitter.algebird.Aggregator.size
     import com.twitter.algebird.spark._
     input.algebird
-    // `aggregate` is an action and collects data back to the driver node
+      // `aggregate` is an action and collects data back to the driver node
       .aggregate(size)
   }
 
