@@ -22,7 +22,7 @@ organization := "com.spotify"
 name := "big-data-rosetta-code"
 version := "0.1.0-SNAPSHOT"
 
-val scioVersion = "0.10.1"
+val scioVersion = "0.10.2"
 val scaldingVersion = "0.17.4"
 val sparkVersion = "3.1.1"
 val algebirdVersion = "0.13.7"
