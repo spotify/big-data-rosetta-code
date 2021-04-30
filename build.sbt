@@ -61,7 +61,7 @@ val scalaMeterFramework = new TestFramework(
 )
 testFrameworks += scalaMeterFramework
 testOptions += Tests.Argument(scalaMeterFramework, "-silent")
-parallelExecution in Test := false
+Test / parallelExecution := false
 logBuffered := false
 
 soccoOnCompile := true
