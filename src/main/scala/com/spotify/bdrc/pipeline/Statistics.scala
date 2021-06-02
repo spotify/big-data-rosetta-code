@@ -20,6 +20,7 @@
 package com.spotify.bdrc.pipeline
 
 import com.spotify.bdrc.util.Records.Rating
+import com.spotify.scio.coders.Coder
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -28,10 +29,11 @@ object Statistics {
 
   case class Stats(max: Double, min: Double, sum: Double, count: Long, mean: Double, stddev: Double)
 
+  import com.twitter.algebird._
+  implicit val momentsCoder: Coder[Moments] = Coder.kryo[Moments]
+
   // ## Algebird `Aggregator`
   def aggregator = {
-    import com.twitter.algebird._
-
     // Create 4 `Aggregator`s with different logic
 
     // The first 3 are of type `Aggregator[Rating, _, Double]` which means it takes `Rating` as
