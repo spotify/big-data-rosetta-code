@@ -19,6 +19,7 @@
 // Input is a collection of case classes
 package com.spotify.bdrc.pipeline
 
+import com.spotify.scio.coders.Coder
 import com.spotify.scio.values.SCollection
 import com.twitter.scalding.TypedPipe
 import org.apache.spark.rdd.RDD
@@ -29,10 +30,11 @@ object FieldStatistics {
   case class Stats(max: Double, min: Double, mean: Double, stddev: Double)
   case class UserStats(age: Stats, income: Stats, score: Stats)
 
+  import com.twitter.algebird._
+  implicit val momentsCoder: Coder[Moments] = Coder.kryo[Moments]
+
   // ## Algebird `Aggregator`
   def aggregator = {
-    import com.twitter.algebird._
-
     // Create 3 `Aggregator`s on `age` field with different logic
 
     // The first 2 are of type `Aggregator[User, _, Int]` which means it takes `User` as input and
