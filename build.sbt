@@ -28,7 +28,7 @@ val sparkVersion = "3.1.2"
 val algebirdVersion = "0.13.8"
 val scalacheckVersion = "1.15.4"
 val scalameterVersion = "0.19"
-val scalatestVersion = "3.2.9"
+val scalatestVersion = "3.2.10"
 val scalatestPlusVersion = "3.1.0.0-RC2"
 
 scalaVersion := "2.12.13"
