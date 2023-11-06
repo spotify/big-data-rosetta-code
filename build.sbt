@@ -41,7 +41,7 @@ scalacOptions ++= Seq(
 )
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
-resolvers += "Cascading libraries" at "https://conjars.org/repo"
+resolvers += "Cascading libraries" at "https://conjars.wensel.net/repo/"
 libraryDependencies ++= Seq(
   "com.spotify" %% "scio-core" % scioVersion,
   "com.spotify" %% "scio-extra" % scioVersion,
