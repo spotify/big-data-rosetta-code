@@ -64,7 +64,7 @@ object Collections {
     b.result()
 
     // Use implicits to automatically build for the target collection type Map[String, Int]
-    val m: Map[String, Int] = l.map(x => "key" + x -> x)(scala.collection.breakOut)
+    val m: Map[String, Int] = l.iterator.map(x => "key" + x -> x).toMap
   }
 
 }
