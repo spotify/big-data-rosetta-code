@@ -71,7 +71,7 @@ soccoPackage := List(
   "com.twitter.scalding:http://twitter.github.io/scalding/api",
   "org.apache.spark:http://spark.apache.org/docs/latest/api/scala"
 )
-addCompilerPlugin(("io.regadas" %% "socco-ng" % "0.1.4").cross(CrossVersion.full))
+addCompilerPlugin(("io.regadas" %% "socco-ng" % "0.1.10").cross(CrossVersion.full))
 makeSite := makeSite.dependsOn(Compile / compile).value
 gitRemoteRepo := "git@github.com:spotify/big-data-rosetta-code.git"
 
