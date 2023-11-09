@@ -15,23 +15,23 @@
  * under the License.
  */
 
-import com.typesafe.sbt.SbtGit.GitKeys.gitRemoteRepo
+import com.github.sbt.git.SbtGit.GitKeys.gitRemoteRepo
 import _root_.io.regadas.sbt.SbtSoccoKeys._
 
 organization := "com.spotify"
 name := "big-data-rosetta-code"
 version := "0.1.0-SNAPSHOT"
 
-val scioVersion = "0.11.4"
+val scioVersion = "0.13.5"
 val scaldingVersion = "0.17.4"
-val sparkVersion = "3.2.1"
-val algebirdVersion = "0.13.9"
-val scalacheckVersion = "1.16.0"
+val sparkVersion = "3.5.0"
+val algebirdVersion = "0.13.10"
+val scalacheckVersion = "1.17.0"
 val scalameterVersion = "0.19"
-val scalatestVersion = "3.2.11"
-val scalatestPlusVersion = "3.1.0.0-RC2"
+val scalatestVersion = "3.2.17"
+val scalatestPlusVersion = "3.2.17.0"
 
-scalaVersion := "2.12.13"
+scalaVersion := "2.12.18"
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-deprecation",
@@ -51,7 +51,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion,
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
   "org.scalatest" %% "scalatest" % scalatestVersion % "test",
-  "org.scalatestplus" %% "scalatestplus-scalacheck" % scalatestPlusVersion % "test",
+  "org.scalatestplus" %% "scalacheck-1-17" % scalatestPlusVersion % "test",
   "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test",
   "com.storm-enroute" %% "scalameter" % scalameterVersion % "test"
 )
