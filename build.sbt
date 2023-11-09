@@ -31,7 +31,7 @@ val scalameterVersion = "0.19"
 val scalatestVersion = "3.2.17"
 val scalatestPlusVersion = "3.2.17.0"
 
-scalaVersion := "2.12.18"
+scalaVersion := "2.13.12"
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-deprecation",
